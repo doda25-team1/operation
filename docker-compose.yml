@@ -1,0 +1,29 @@
+services:
+  model-service:
+    image: ${BACKEND_IMAGE}
+    container_name: sms-model-service
+    environment:
+      - PORT=${BACKEND_CONTAINER_PORT}
+    ports:
+      - "${BACKEND_HOST_PORT}:${BACKEND_CONTAINER_PORT}"
+    volumes:
+      - ../model_service/output:/app/output
+    restart: unless-stopped
+    networks:
+      - sms-network
+  app-service:
+    image: ${FRONTEND_IMAGE}
+    container_name: sms-app-service
+    environment:
+      - BACKEND_URL=${BACKEND_URL}
+      - SERVER_PORT=${FRONTEND_CONTAINER_PORT}
+    ports:
+      - "${FRONTEND_HOST_PORT}:${FRONTEND_CONTAINER_PORT}"
+    depends_on:
+      - model-service
+    restart: unless-stopped
+    networks:
+      - sms-network
+networks:
+  sms-network:
+    driver: bridge
