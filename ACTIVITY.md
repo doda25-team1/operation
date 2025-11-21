@@ -5,3 +5,5 @@ I worked on the F8 task of A1, implementing automated versioning and GitHub work
 I worked on creating the docker file, upgraded it to contain 2 stages, created PORT as an enviromental variable and allowed for multi-arhitecture compatibility. Therefore satisfying F3,F4 (for the model-service) and F5,F6.
 - Daniel: https://github.com/doda25-team1/app/pull/1, https://github.com/doda25-team1/lib-version/pull/7
 I made the Dockerfile for the app service, integrated the lib-version library, and made small adjustments to workflows, other configuration, and docs.
+- Alex: https://github.com/doda25-team1/model-service/pull/2, https://github.com/doda25-team1/app/pull/2, https://github.com/doda25-team1/operation/pull/1
+I made the Dockefile compose and made sure the PORT numbers for both services are configurable and overwritten by compose.
