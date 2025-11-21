@@ -4,10 +4,11 @@ This repository contains the deployment files for the SMS Spam Checker applicati
 
 ## Architecture Overview
 
-The SMS Spam Checker consists of two main services:
+The SMS Spam Checker consists of two main services and a shared library:
 
-- **app-service**: Spring Boot frontend application that serves the web UI and acts as an API gateway
-- **model-service**: Python Flask backend that provides ML-based spam detection
+- [**app-service** ](../app): Spring Boot frontend application that serves the web UI and acts as an API gateway.
+- [**model-service**](../model_service): Python Flask backend that provides ML-based spam detection.
+- [**lib-version**](../lib-version): Shared Java library that exposes the packaged version at runtime (used by the app-service).
 
 ## Requirements
 
@@ -18,15 +19,21 @@ Before running the application, make sure to have the following installed:
 
 ### Setup (Locally)
 
-1. **Train the model**
-2. **Build the images** locally
-3. **Start the services**
+1. **Setup .env using .env.example**
+2. **Train the model** (required)
+3. **Build the images** locally (optional)
+4. **Start the services**
 
-#### Step 1: Train the Model
+#### Step 1: Setup .env
+Copy the `.env.example` file and change its name to `.env`. You can adjust configurations as you see fit.
 
-Follow the steps described in the `../model_service/README.md`. 
+#### Step 2: Train the Model (Required)
 
-#### Step 2: Build Images
+Follow the steps described in the `../model_service/README.md`. This is the model which will be used when you run docker-compose.
+You will need to have both repositories setup.
+
+#### Step 3: Build Images (Optional)
+You can build the images on your own using these commands:
 
 ```bash
 cd ../app
@@ -36,8 +43,14 @@ cd ../model_service
 docker build -t ghcr.io/doda25-team1/model-service:latest .
 ```
 
-#### Step 3: Start Services
+#### Step 4: Start Services
+If you want to pull our images, use this:
+```bash
+cd ../operation
+docker-compose up --pull always -d
+```
 
+Otherwise:
 ```bash
 cd ../operation
 docker-compose up -d
