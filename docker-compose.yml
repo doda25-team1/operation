@@ -4,6 +4,8 @@ services:
     container_name: sms-model-service
     environment:
       - PORT=${BACKEND_CONTAINER_PORT}
+      - MODEL_VERSION=${MODEL_VERSION}
+      - MODEL_BASE_URL=${MODEL_BASE_URL}
     ports:
       - "${BACKEND_HOST_PORT}:${BACKEND_CONTAINER_PORT}"
     volumes:
