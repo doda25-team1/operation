@@ -6,8 +6,6 @@ services:
       - PORT=${BACKEND_CONTAINER_PORT}
       - MODEL_VERSION=${MODEL_VERSION}
       - MODEL_BASE_URL=${MODEL_BASE_URL}
-    ports:
-      - "${BACKEND_HOST_PORT}:${BACKEND_CONTAINER_PORT}"
     volumes:
       - ../model_service/output:/app/output
     restart: unless-stopped
