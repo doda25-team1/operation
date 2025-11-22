@@ -1,6 +1,7 @@
 services:
   model-service:
-    image: ${BACKEND_IMAGE}
+    build:
+      context: ../model_service
     container_name: sms-model-service
     environment:
       - PORT=${BACKEND_CONTAINER_PORT}
@@ -12,7 +13,8 @@ services:
     networks:
       - sms-network
   app-service:
-    image: ${FRONTEND_IMAGE}
+    build:
+      context: ../app
     container_name: sms-app-service
     environment:
       - BACKEND_URL=${BACKEND_URL}
