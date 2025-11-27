@@ -1,4 +1,10 @@
 ---
 - hosts: ctrl
   become: true
-  tasks: []
+  tasks:
+    #step 12
+    - name: Start and enable kubelet service
+      ansible.builtin.service:
+        name: kubelet
+        state: started
+        enabled: yes
