@@ -6,7 +6,6 @@ Vagrant.configure("2") do |config|
   config.vm.define "ctrl" do |ctrl|
     ctrl.vm.hostname = "ctrl"
     ctrl.vm.network "private_network", ip: "192.168.56.100"
-    ctrl.vm.network "public_network"
     ctrl.vm.provider "virtualbox" do |vb|
       vb.memory = "4096"
       vb.cpus = 1
@@ -17,7 +16,6 @@ Vagrant.configure("2") do |config|
     config.vm.define "node-#{i}" do |node|
       node.vm.hostname = "node-#{i}"
       node.vm.network "private_network", ip: "192.168.56.#{100+i}"
-      node.vm.network "public_network"
       node.vm.provider "virtualbox" do |vb|
         vb.memory = "6144"
         vb.cpus = 2
@@ -29,11 +27,11 @@ Vagrant.configure("2") do |config|
   config.vm.provision "shell", inline: <<-SHELL
     mkdir -p /vagrant/inventory
     cat <<EOF > /vagrant/inventory/hosts.ini
-    [ctrl]
-    192.168.56.100 ansible_user=vagrant
+[ctrl]
+192.168.56.100 ansible_user=vagrant
 
-    [nodes]
-    EOF
+[nodes]
+EOF
 
     for i in $(seq 1 #{NODE_COUNT}); do
       echo "192.168.56.$((100+i)) ansible_user=vagrant" >> /vagrant/inventory/hosts.ini
