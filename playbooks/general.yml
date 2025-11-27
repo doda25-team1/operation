@@ -18,6 +18,7 @@
       apt:
         update_cache: true
 
+    #step4
     - name: Ensure .ssh directory exists
       ansible.builtin.file:
         path: "/home/{{ ssh_user }}/.ssh"
@@ -40,6 +41,7 @@
         state: present
         key: "{{ lookup('file', item) }}"
       loop: "{{ lookup('fileglob', ssh_keys_dir + '/*.pub', wantlist=True) }}"
+
     - name: Debug SSH keys found
       debug:
         msg: "{{ lookup('fileglob', ssh_keys_dir + '/*.pub', wantlist=True) }}"
@@ -54,7 +56,7 @@
         path: /etc/fstab
         regexp: '\bswap\b'
         state: absent
-            
+
     #step6
     - name: Enable kernel modules for Kubernetes networking
       ansible.builtin.copy:
