@@ -147,6 +147,14 @@
         - runc
 
     #step 11
+    - name: Ensure containerd config directory exists
+      ansible.builtin.file:
+        path: /etc/containerd
+        state: directory
+        owner: root
+        group: root
+        mode: '0755'
+
     - name: Generate default containerd configuration
       ansible.builtin.shell: containerd config default > /etc/containerd/config.toml
       args:
