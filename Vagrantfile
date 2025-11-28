@@ -6,7 +6,6 @@ Vagrant.configure("2") do |config|
   config.vm.define "ctrl" do |ctrl|
     ctrl.vm.hostname = "ctrl"
     ctrl.vm.network "private_network", ip: "192.168.56.100"
-    ctrl.vm.network "public_network"
     ctrl.vm.provider "virtualbox" do |vb|
       vb.memory = "4096"
       # kubeadm requires 2 cores
