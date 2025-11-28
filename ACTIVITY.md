@@ -23,3 +23,5 @@ I worked on the steps 4 to 7 of A2. I implemented secure SSH key-based access to
 
 - Ion: https://github.com/doda25-team1/operation/pull/9
 I worked on setting up kubernetes on the controller VM and making sure 
+
+- Alex: I worked on the Step 1-3 and Step 8, defined the Vagrant file. Set up the Ansible provisioner in it and managed etc/hosts dynamically via Jinja.
