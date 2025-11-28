@@ -123,7 +123,7 @@
       ansible.builtin.apt:
         update_cache: yes
 
-    #step 10
+    #step 9
     - name: Install container runtime and Kubernetes tools
       ansible.builtin.apt:
         name:
@@ -145,8 +145,8 @@
         - kubectl
         - containerd
         - runc
-    
-  #step 11
+
+    #step 11
     - name: Generate default containerd configuration
       ansible.builtin.shell: containerd config default > /etc/containerd/config.toml
       args:
@@ -177,4 +177,11 @@
       ansible.builtin.service:
         name: containerd
         state: restarted
+        enabled: yes
+
+    #step 12
+    - name: Start and enable kubelet service
+      ansible.builtin.service:
+        name: kubelet
+        state: started
         enabled: yes
