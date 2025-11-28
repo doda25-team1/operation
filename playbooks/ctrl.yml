@@ -2,4 +2,61 @@
 - name: Controller-specific configuration
   hosts: ctrl
   become: true
-  tasks: []
+
+  vars:
+    ssh_user: vagrant
+
+  tasks:
+    # Step 13: Init cluster
+    - name: Check if Kubernetes cluster is already initialized
+      ansible.builtin.stat:
+        path: /etc/kubernetes/admin.conf
+      register: kube_admin_conf
+
+    - name: Initialize Kubernetes control plane with kubeadm
+      ansible.builtin.command: >
+        kubeadm init
+        --apiserver-advertise-address={{ controller_ip }}
+        --node-name ctrl
+        --pod-network-cidr={{ pod_network_cidr }}
+      when: not kube_admin_conf.stat.exists
+
+    - name: Verify that admin.conf exists after initialization
+      ansible.builtin.stat:
+        path: /etc/kubernetes/admin.conf
+      register: kube_admin_conf
+
+    # Step 14: Setup kubectl
+    - name: Ensure .kube directory exists for vagrant user
+      ansible.builtin.file:
+        path: "/home/{{ ssh_user }}/.kube"
+        state: directory
+        owner: "{{ ssh_user }}"
+        group: "{{ ssh_user }}"
+        mode: "0700"
+      when: kube_admin_conf.stat.exists
+
+    - name: Copy admin kubeconfig for vagrant user
+      ansible.builtin.copy:
+        src: /etc/kubernetes/admin.conf
+        dest: "/home/{{ ssh_user }}/.kube/config"
+        owner: "{{ ssh_user }}"
+        group: "{{ ssh_user }}"
+        mode: "0600"
+        remote_src: true
+      when: kube_admin_conf.stat.exists
+
+    - name: Ensure .kube directory exists in shared /vagrant folder
+      ansible.builtin.file:
+        path: /vagrant/.kube
+        state: directory
+        mode: "0700"
+      when: kube_admin_conf.stat.exists
+
+    - name: Copy admin kubeconfig to shared /vagrant folder for host use
+      ansible.builtin.copy:
+        src: /etc/kubernetes/admin.conf
+        dest: /vagrant/.kube/config
+        mode: "0644"
+        remote_src: true
+      when: kube_admin_conf.stat.exists

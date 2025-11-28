@@ -128,3 +128,67 @@ docker-compose logs model-service
 ```bash
 docker-compose restart
 ```
+
+## Use Kubernetes
+
+This repo contains logic to set up a small Kubernetes cluster using Vagrant and Ansible.
+
+### Prerequisites
+
+- *VirtualBox*
+- *Vagrant*
+- *kubectl* (on your host machine)
+
+### Provision the Kubernetes cluster
+
+```bash
+    cd ../operation
+    vagrant up
+```
+
+### Use `kubectl` inside the controller VM
+
+SSH into the controller:
+
+```bash
+    vagrant ssh ctrl
+```
+
+Inside the VM, `kubectl` is already configured for the `vagrant` user:
+
+```bash
+    # Show nodes
+    kubectl get nodes
+    
+    # Show all pods in all namespaces
+    kubectl get pods -A
+```
+
+> The kubeconfig used here is `/home/vagrant/.kube/config`.
+
+### Use `kubectl` from the host machine
+
+The provisioning also copies the kubeconfig to the host directory where you run Vagrant: `operation/.kube/config`.
+
+This kubeconfig contains admin credentials and points to the correct API server.
+
+#### Linux / macOS (bash/zsh):
+
+```bash
+    cd path/to/operation
+    export KUBECONFIG="$(pwd)/.kube/config"
+
+    kubectl get nodes
+    kubectl get pods -A
+```
+
+#### Windows (PowerShell):
+
+```bash
+    cd C:\path\to\opeartion
+
+    kubectl --kubeconfig "./.kube/config" get nodes
+    kubectl --kubeconfig "./.kube/config" get pods -A
+```
+
+> If this does not work, copy the config to the default location kubectl expects (e.g. `c:\Users\username\.kube\config`) and run kubectl normally.
