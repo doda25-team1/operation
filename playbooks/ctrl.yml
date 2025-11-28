@@ -1,4 +1,5 @@
 ---
-- hosts: ctrl
+- name: Controller-specific configuration
+  hosts: ctrl
   become: true
   tasks: []
