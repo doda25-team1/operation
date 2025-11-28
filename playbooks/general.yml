@@ -8,6 +8,8 @@
   vars: # from Vagrantfile extra_vars
     controller_ip: "{{ controller_ip }}"
     worker_count: "{{ worker_count }}"
+    ssh_user: vagrant
+    ssh_keys_dir: "../ssh-keys"
 
   tasks:
 
@@ -15,6 +17,77 @@
     - name: Update apt cache
       apt:
         update_cache: true
+
+    - name: Ensure .ssh directory exists
+      ansible.builtin.file:
+        path: "/home/{{ ssh_user }}/.ssh"
+        state: directory
+        owner: "{{ ssh_user }}"
+        group: "{{ ssh_user }}"
+        mode: '0700'
+
+    - name: Ensure authorized_keys file exists
+      ansible.builtin.file:
+        path: "/home/{{ ssh_user }}/.ssh/authorized_keys"
+        state: touch
+        owner: "{{ ssh_user }}"
+        group: "{{ ssh_user }}"
+        mode: '0600'
+
+    - name: Add public SSH keys for team
+      ansible.posix.authorized_key:
+        user: "{{ ssh_user }}"
+        state: present
+        key: "{{ lookup('file', item) }}"
+      loop: "{{ lookup('fileglob', ssh_keys_dir + '/*.pub', wantlist=True) }}"
+    - name: Debug SSH keys found
+      debug:
+        msg: "{{ lookup('fileglob', ssh_keys_dir + '/*.pub', wantlist=True) }}"
+
+
+    # step5
+    - name: Disable swap immediately
+      ansible.builtin.shell: swapoff -a
+
+    - name: Remove swap from /etc/fstab
+      ansible.builtin.lineinfile:
+        path: /etc/fstab
+        regexp: '\bswap\b'
+        state: absent
+            
+    #step6
+    - name: Enable kernel modules for Kubernetes networking
+      ansible.builtin.copy:
+        dest: /etc/modules-load.d/k8s.conf
+        owner: root
+        group: root
+        mode: '0644'
+        content: |
+          overlay
+          br_netfilter
+
+    - name: overlay module is loaded
+      community.general.modprobe:
+        name: overlay
+        state: present
+
+    - name: br_netfilter module is loaded
+      community.general.modprobe:
+        name: br_netfilter
+        state: present
+
+    #step7
+    - name: Enable IPv4 forwarding and bridge networking
+      ansible.posix.sysctl:
+        name: "{{ item.name }}"
+        value: "{{ item.value }}"
+        state: present
+        sysctl_set: yes
+        reload: true
+      loop:
+        - { name: net.ipv4.ip_forward, value: 1 }
+        - { name: net.bridge.bridge-nf-call-iptables, value: 1 }
+        - { name: net.bridge.bridge-nf-call-ip6tables, value: 1 }
 
     # use jinja to generate /etc/hosts
     - name: Set up /etc/hosts file dynamically
