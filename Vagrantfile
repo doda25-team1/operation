@@ -1,4 +1,4 @@
-NODE_COUNT = 3  # workers count
+NODE_COUNT = 2  # workers count
 
 Vagrant.configure("2") do |config|
   config.vm.box = "bento/ubuntu-24.04"
