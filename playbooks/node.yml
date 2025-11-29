@@ -1,0 +1,4 @@
+---
+- hosts: "node-*"
+  become: true
+  tasks: []

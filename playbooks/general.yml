@@ -1,11 +1,23 @@
-- hosts: all
+---
+# will apply to both controller and nodes
+- name: General configuration for controller and its nodes
+  hosts: all
+  # sudo for tasks that require root permissions
   become: true
-  vars:
+
+  vars: # from Vagrantfile extra_vars
+    controller_ip: "{{ controller_ip }}"
+    worker_count: "{{ worker_count }}"
     ssh_user: vagrant
     ssh_keys_dir: "./ssh-keys"
+
   tasks:
 
-    #step4
+    # package install tasks to always be up to date
+    - name: Update apt cache
+      apt:
+        update_cache: true
+
     - name: Ensure .ssh directory exists
       ansible.builtin.file:
         path: "/home/{{ ssh_user }}/.ssh"
@@ -73,4 +85,11 @@
         - { name: net.bridge.bridge-nf-call-iptables, value: 1 }
         - { name: net.bridge.bridge-nf-call-ip6tables, value: 1 }
 
-
+    # use jinja to generate /etc/hosts
+    - name: Set up /etc/hosts file dynamically
+      template:
+        src: "../templates/hosts.j2"
+        dest: /etc/hosts
+        owner: root
+        group: root
+        mode: '0644'
