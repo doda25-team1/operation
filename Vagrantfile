@@ -8,8 +8,7 @@ Vagrant.configure("2") do |config|
     ctrl.vm.network "private_network", ip: "192.168.56.100"
     ctrl.vm.provider "virtualbox" do |vb|
       vb.memory = "4096"
-      # kubeadm requires 2 cores
-      vb.cpus = 2
+      vb.cpus = 2 # kubeadm requires 2 cores
     end
   end
 
@@ -27,8 +26,6 @@ Vagrant.configure("2") do |config|
 
   config.vm.provision "ansible" do |ansible| # use ansible to configure vms
     ansible.playbook = "playbooks/general.yml" # this one will run first as it is general
-    # ansible.inventory_path = "inventory/hosts.ini" # where inventory will be generated
-    # ansible.install = true
 
     ansible.extra_vars = {
       worker_count: NODE_COUNT,
@@ -39,9 +36,6 @@ Vagrant.configure("2") do |config|
   # controller tasks
   config.vm.provision "ansible" do |ansible|
     ansible.playbook = "playbooks/ctrl.yml"
-    # ansible.inventory_path = "inventory/hosts.ini"
-    # ansible.limit = "ctrl"
-    # ansible.install = true
 
     ansible.extra_vars = {
       controller_ip: "192.168.56.100",
@@ -52,9 +46,6 @@ Vagrant.configure("2") do |config|
   # node tasks
   config.vm.provision "ansible" do |ansible|
     ansible.playbook = "playbooks/node.yml"
-    # ansible.inventory_path = "inventory/hosts.ini"
-    # ansible.limit = "nodes"
-    # ansible.install = true
 
     ansible.extra_vars = {
       controller_ip: "192.168.56.100",
