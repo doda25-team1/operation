@@ -23,24 +23,10 @@ Vagrant.configure("2") do |config|
     end
   end
 
-  # create the directory, file and fill it in
-  config.vm.provision "shell", inline: <<-SHELL
-    mkdir -p /vagrant/inventory
-    cat <<EOF > /vagrant/inventory/hosts.ini
-[ctrl]
-192.168.56.100 ansible_user=vagrant
-
-[nodes]
-EOF
-
-    for i in $(seq 1 #{NODE_COUNT}); do
-      echo "node-$i 192.168.56.$((100+i)) ansible_user=vagrant" >> /vagrant/inventory/hosts.ini
-    done
-  SHELL
 
   config.vm.provision "ansible" do |ansible| # use ansible to configure vms
     ansible.playbook = "playbooks/general.yml" # this one will run first as it is general
-    ansible.inventory_path = "inventory/hosts.ini" # where inventory will be generated
+    # ansible.inventory_path = "inventory/hosts.ini" # where inventory will be generated
 
     ansible.extra_vars = {
       worker_count: NODE_COUNT,
@@ -51,14 +37,14 @@ EOF
   # controller tasks
   config.vm.provision "ansible" do |ansible|
     ansible.playbook = "playbooks/ctrl.yml"
-    ansible.inventory_path = "inventory/hosts.ini"
-    ansible.limit = "ctrl"
+    # ansible.inventory_path = "inventory/hosts.ini"
+    # ansible.limit = "ctrl"
   end
 
   # node tasks
   config.vm.provision "ansible" do |ansible|
     ansible.playbook = "playbooks/node.yml"
-    ansible.inventory_path = "inventory/hosts.ini"
-    ansible.limit = "nodes"
+    # ansible.inventory_path = "inventory/hosts.ini"
+    # ansible.limit = "nodes"
   end
 end

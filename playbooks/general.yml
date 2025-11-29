@@ -9,7 +9,7 @@
     controller_ip: "{{ controller_ip }}"
     worker_count: "{{ worker_count }}"
     ssh_user: vagrant
-    ssh_keys_dir: "./ssh-keys"
+    ssh_keys_dir: "../ssh-keys"
 
   tasks:
 
@@ -40,8 +40,12 @@
         state: present
         key: "{{ lookup('file', item) }}"
       loop: "{{ lookup('fileglob', ssh_keys_dir + '/*.pub', wantlist=True) }}"
+    - name: Debug SSH keys found
+      debug:
+        msg: "{{ lookup('fileglob', ssh_keys_dir + '/*.pub', wantlist=True) }}"
 
-    #step5
+
+    # step5
     - name: Disable swap immediately
       ansible.builtin.shell: swapoff -a
 
