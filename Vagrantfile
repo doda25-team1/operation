@@ -34,7 +34,7 @@ Vagrant.configure("2") do |config|
 EOF
 
     for i in $(seq 1 #{NODE_COUNT}); do
-      echo "node-$i 192.168.56.$((100+i)) ansible_user=vagrant" >> /vagrant/inventory/hosts.ini
+      echo "192.168.56.$((100+i)) ansible_user=vagrant" >> /vagrant/inventory/hosts.ini
     done
   SHELL
 
