@@ -1,7 +1,15 @@
 ---
-- hosts: all
+- hosts: node-*
   become: true
   tasks:
+    # - name: Wait for API server on ctrl to listen on 6443
+    #   ansible.builtin.wait_for:
+    #     host: "{{ controller_ip | default('ctrl') }}"
+    #     port: 6443
+    #     state: started
+    #     timeout: 60
+    #     sleep: 5
+
     - name: Generate join command from controller
       ansible.builtin.shell: kubeadm token create --print-join-command
       register: join_command

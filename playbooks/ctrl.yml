@@ -60,3 +60,49 @@
         mode: "0644"
         remote_src: true
       when: kube_admin_conf.stat.exists
+
+    # Step 15: Setup flannel
+    - name: Download Flannel manifest
+      ansible.builtin.get_url:
+        url: https://raw.githubusercontent.com/flannel-io/flannel/v0.26.7/Documentation/kube-flannel.yml
+        dest: /tmp/kube-flannel.yml
+
+    - name: Patch Flannel to use eth1 (Host-only network)
+      ansible.builtin.replace:
+        path: /tmp/kube-flannel.yml
+        regexp: '(- --kube-subnet-mgr)'
+        replace: '\1\n        - --iface=eth1'
+
+    - name: Apply Flannel manifest
+      ansible.builtin.command: kubectl apply -f /tmp/kube-flannel.yml
+      become_user: vagrant
+
+    # Step 16: Setup Helm
+    - name: Add Helm GPG key
+      ansible.builtin.get_url:
+        url: https://packages.buildkite.com/helm-linux/helm-debian/gpgkey
+        dest: /etc/apt/keyrings/helm.asc
+        mode: '0644'
+
+    - name: Add Helm repository
+      ansible.builtin.apt_repository:
+        repo: "deb [signed-by=/etc/apt/keyrings/helm.asc] https://packages.buildkite.com/helm-linux/helm-debian/any/ any main"
+        state: present
+        filename: helm-stable-debian
+
+    - name: Install Helm
+      ansible.builtin.apt:
+        name: helm
+        update_cache: yes
+
+    # Step 17: Setup Helm-Diff
+    - name: Check installed helm plugins
+      ansible.builtin.command: helm plugin list
+      become_user: vagrant
+      register: helm_plugins
+      changed_when: false 
+
+    - name: Install helm-diff plugin
+      ansible.builtin.command: helm plugin install https://github.com/databus23/helm-diff
+      become_user: vagrant
+      when: "'diff' not in helm_plugins.stdout"

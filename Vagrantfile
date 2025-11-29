@@ -25,10 +25,10 @@ Vagrant.configure("2") do |config|
   end
 
 
-  config.vm.provision "ansible_local" do |ansible| # use ansible to configure vms
+  config.vm.provision "ansible" do |ansible| # use ansible to configure vms
     ansible.playbook = "playbooks/general.yml" # this one will run first as it is general
     # ansible.inventory_path = "inventory/hosts.ini" # where inventory will be generated
-    ansible.install = true
+    # ansible.install = true
 
     ansible.extra_vars = {
       worker_count: NODE_COUNT,
@@ -37,11 +37,11 @@ Vagrant.configure("2") do |config|
   end
 
   # controller tasks
-  config.vm.provision "ansible_local" do |ansible|
+  config.vm.provision "ansible" do |ansible|
     ansible.playbook = "playbooks/ctrl.yml"
     # ansible.inventory_path = "inventory/hosts.ini"
     # ansible.limit = "ctrl"
-    ansible.install = true
+    # ansible.install = true
 
     ansible.extra_vars = {
       controller_ip: "192.168.56.100",
@@ -50,10 +50,14 @@ Vagrant.configure("2") do |config|
   end
 
   # node tasks
-  config.vm.provision "ansible_local" do |ansible|
+  config.vm.provision "ansible" do |ansible|
     ansible.playbook = "playbooks/node.yml"
     # ansible.inventory_path = "inventory/hosts.ini"
     # ansible.limit = "nodes"
-    ansible.install = true
+    # ansible.install = true
+
+    ansible.extra_vars = {
+      controller_ip: "192.168.56.100",
+    }
   end
 end
