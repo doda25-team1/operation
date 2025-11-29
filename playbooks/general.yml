@@ -23,6 +23,16 @@
         name: apt-transport-https
         state: present
 
+    - name: Disable UFW firewall on all nodes
+      ansible.builtin.ufw:
+        state: disabled
+
+    - name: Ensure UFW service is stopped and disabled on all nodes
+      ansible.builtin.service:
+        name: ufw
+        state: stopped
+        enabled: false
+
     #step4
     - name: Ensure .ssh directory exists
       ansible.builtin.file:
