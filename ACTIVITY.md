@@ -14,3 +14,8 @@ I made the Dockefile compose and made sure the PORT numbers for both services ar
 
 - Ion: https://github.com/doda25-team1/model-service/pull/4, https://github.com/doda25-team1/model-service/pull/7, https://github.com/doda25-team1/operation/pull/3
 I worked on creting a manually-triggered workflow for training and releasing a new model (F9 and F10). The model version is passed as a virtual environment MODEL_VERSION. If no model found on the mounted volume, it will be downloaded from the corresponding release.
+
+
+### Week Q2.2 (Nov 21+)
+- Deon: https://github.com/doda25-team1/operation/pull/7
+I worked on the steps 4 to 7 of A2. I implemented secure SSH key-based access to all VMs by registering multiple team public keys using Ansible. Then disabled SWAP both immediately and permanently, ensuring Kubernetes compatibility by stopping active swap and removing it from /etc/fstab. Finally, configured Kubernetes networking at the kernel level by loading br_netfilter and overlay modules and enabling required sysctl parameters for IP forwarding and bridged traffic.
