@@ -40,3 +40,39 @@
 
     - name: Apply MetalLB Configuration
       ansible.builtin.shell: kubectl apply -f /root/metallb-config.yaml
+
+    - name: Add Ingress-NGINX Helm repository
+      kubernetes.core.helm_repository:
+        name: ingress-nginx
+        repo_url: https://kubernetes.github.io/ingress-nginx
+
+
+    - name: Ensure ingress-nginx namespace exists
+      kubernetes.core.k8s:
+        state: present
+        definition:
+        apiVersion: v1
+        kind: Namespace
+        metadata:
+        name: ingress-nginx
+
+
+    - name: Install Ingress-NGINX via Helm
+      kubernetes.core.helm:
+        name: ingress-nginx
+        chart_ref: ingress-nginx/ingress-nginx
+        release_namespace: ingress-nginx
+        create_namespace: false
+        state: present
+        values:
+        controller:
+        service:
+        type: LoadBalancer
+
+
+    - name: Wait for ingress controller to become ready
+      ansible.builtin.shell: |
+        kubectl wait --namespace ingress-nginx \
+        --for=condition=ready pod \
+        -l app.kubernetes.io/component=controller \
+        --timeout=120s
