@@ -1,0 +1,38 @@
+{{- if .Values.app.ingress.enabled }}
+# Allows external traffic to reach your app
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  # name
+  name: {{ include "doda-sms-app.fullname" . }}-app
+  labels:
+    {{- include "doda-sms-app.labels" . | nindent 4 }}
+    app.kubernetes.io/component: app
+  {{- with .Values.app.ingress.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  {{- if .Values.app.ingress.className }}
+  ingressClassName: {{ .Values.app.ingress.className }}
+  {{- end }}
+  {{- if .Values.app.ingress.tls.enabled }}
+  tls:
+  - hosts:
+    - {{ .Values.app.ingress.hostname }}
+    {{- if .Values.app.ingress.tls.secretName }}
+    secretName: {{ .Values.app.ingress.tls.secretName }}
+    {{- end }}
+  {{- end }}
+  rules:
+  - host: {{ .Values.app.ingress.hostname }}
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ include "doda-sms-app.fullname" . }}-app
+            port:
+              number: {{ .Values.app.service.port }}
+{{- end }}

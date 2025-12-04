@@ -1,0 +1,19 @@
+{{- if .Values.app }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "doda-sms-app.fullname" . }}-app
+  labels:
+    {{- include "doda-sms-app.labels" . | nindent 4 }}
+    app.kubernetes.io/component: app
+spec:
+  type: {{ .Values.app.service.type }}
+  ports:
+  - port: {{ .Values.app.service.port }}
+    targetPort: {{ .Values.app.service.targetPort }}
+    protocol: TCP
+    name: http
+  selector:
+    {{- include "doda-sms-app.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: app
+{{- end }}
