@@ -1,0 +1,19 @@
+{{- if .Values.modelService }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "doda-sms-app.fullname" . }}-model
+  labels:
+    {{- include "doda-sms-app.labels" . | nindent 4 }}
+    app.kubernetes.io/component: model-service
+spec:
+  type: {{ .Values.modelService.service.type | default "ClusterIP" }}
+  selector:
+    {{- include "doda-sms-app.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: model-service
+  ports:
+    - port: {{ .Values.modelService.service.port }}
+      targetPort: {{ .Values.modelService.service.targetPort }}
+      protocol: TCP
+      name: http
+{{- end }}
