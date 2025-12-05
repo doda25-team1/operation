@@ -28,3 +28,9 @@ I was responsible for steps 18, 19, and 20. I made a small addition to the node.
 I worked on setting up kubernetes on the controller VM and making sure 
 
 - Alex: I worked on the Step 1-3 and Step 8, defined the Vagrant file. Set up the Ansible provisioner in it and managed etc/hosts dynamically via Jinja.
+
+
+### Week Q2.3 (Nov 29+)
+
+- Alex: https://github.com/doda25-team1/operation/pull/11
+Worked on deployment and service manifests, created ingress, and implemented values.yaml to allow changing hostnames and URLs.
