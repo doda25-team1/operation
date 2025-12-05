@@ -1,0 +1,36 @@
+# application config
+app:
+  name: sms-app
+  replicaCount: 2
+  
+  # Docker image settings
+  image:
+    repository: ghcr.io/doda25-team1/app
+    tag: latest # version to be used
+    pullPolicy: IfNotPresent # only if not already downloaded
+  
+  # Network settings for the app
+  service:
+    type: ClusterIP # only accessible within the cluster
+    port: 8080 # port other services talk to
+    targetPort: 8080 # port app listens to
+  
+  # Resource limitations
+  resources:
+    limits:
+      cpu: 500m # 0.5 CPU cores
+      memory: 512Mi # 512 megabytes of RAM
+    # minimums
+    requests:
+      cpu: 250m # 0.25 CPU cores
+      memory: 256Mi # 256 megabytes of RAM
+  
+  # Access the app from outside the cluster
+  ingress:
+    enabled: true
+    className: "nginx"
+    hostname: "sms-app.example.com" # url on which app is accessible
+    annotations: {}
+    tls:
+      enabled: false
+      secretName: ""
