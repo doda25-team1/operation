@@ -18,6 +18,21 @@
       apt:
         update_cache: true
 
+    - name: Install apt-transport-https for Helm and Kubernetes
+      ansible.builtin.apt:
+        name: apt-transport-https
+        state: present
+
+    - name: Disable UFW firewall on all nodes
+      ansible.builtin.ufw:
+        state: disabled
+
+    - name: Ensure UFW service is stopped and disabled on all nodes
+      ansible.builtin.service:
+        name: ufw
+        state: stopped
+        enabled: false
+
     #step4
     - name: Ensure .ssh directory exists
       ansible.builtin.file:
@@ -175,11 +190,10 @@
         state: present
 
     - name: Enable SystemdCgroup
-      ansible.builtin.lineinfile:
+      ansible.builtin.replace:
         path: /etc/containerd/config.toml
-        regexp: '^\s*SystemdCgroup\s*='
-        line: '            SystemdCgroup = true'
-        state: present
+        regexp: 'SystemdCgroup = false'
+        replace: 'SystemdCgroup = true'
 
     - name: Restart containerd service
       ansible.builtin.service:
@@ -188,8 +202,18 @@
         enabled: yes
 
     #step 12
+    - name: Configure Kubelet Node IP
+      ansible.builtin.lineinfile:
+        path: /etc/default/kubelet
+        regexp: '^KUBELET_EXTRA_ARGS='
+        line: "KUBELET_EXTRA_ARGS=--node-ip={{ hostvars[inventory_hostname]['ansible_eth1']['ipv4']['address'] }}"
+        create: yes
+        owner: root
+        group: root
+        mode: '0644'
+
     - name: Start and enable kubelet service
       ansible.builtin.service:
         name: kubelet
-        state: started
+        state: restarted
         enabled: yes
