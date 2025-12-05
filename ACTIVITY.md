@@ -31,4 +31,12 @@ I worked on setting up kubernetes on the controller VM and making sure
 
 - Alex: I worked on the Step 1-3 and Step 8, defined the Vagrant file. Set up the Ansible provisioner in it and managed etc/hosts dynamically via Jinja.
 
-- Noah: I worked on stepe 21-23 of A2, and was trying to test the vagrant setup, but this was tough using WSL.
+- Noah: I worked on steps 21-23 of A2, and was trying to test the vagrant setup, but this was tough using WSL.
+
+### Week Q2.3 (Nov 29+)
+
+- Alex: https://github.com/doda25-team1/operation/pull/11
+Worked on deployment and service manifests, created ingress, and implemented values.yaml to allow changing hostnames and URLs.
+
+- Noah: https://github.com/doda25-team1/operation/pull/12
+I worked on finalising the last few steps i was working on from last week. I was not able to start with A3 as I was tasked to finalise that task too.
