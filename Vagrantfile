@@ -56,9 +56,4 @@ Vagrant.configure("2") do |config|
       controller_ip: "192.168.56.100",
     }
   end
-
-  # finalization tasks (MetalLB, Ingress, Dashboard, Istio)
-  config.vm.provision "ansible" do |ansible|
-    ansible.playbook = "playbooks/finalization.yml"
-  end
 end
