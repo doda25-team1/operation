@@ -15,6 +15,8 @@ I made the Dockefile compose and made sure the PORT numbers for both services ar
 - Ion: https://github.com/doda25-team1/model-service/pull/4, https://github.com/doda25-team1/model-service/pull/7, https://github.com/doda25-team1/operation/pull/3
 I worked on creting a manually-triggered workflow for training and releasing a new model (F9 and F10). The model version is passed as a virtual environment MODEL_VERSION. If no model found on the mounted volume, it will be downloaded from the corresponding release.
 
+- Noah: https://github.com/doda25-team1/lib-version/pull/1, https://github.com/doda25-team1/lib-version/pull/2. 
+I worked on creating the intial lib-version setup, and worked on feature branch versioning for this too.
 
 ### Week Q2.2 (Nov 21+)
 
@@ -28,3 +30,5 @@ I was responsible for steps 18, 19, and 20. I made a small addition to the node.
 I worked on setting up kubernetes on the controller VM and making sure 
 
 - Alex: I worked on the Step 1-3 and Step 8, defined the Vagrant file. Set up the Ansible provisioner in it and managed etc/hosts dynamically via Jinja.
+
+- Noah: I worked on stepe 21-23 of A2, and was trying to test the vagrant setup, but this was tough using WSL.
