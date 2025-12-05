@@ -25,7 +25,7 @@ I worked on the steps 4 to 7 of A2. I implemented secure SSH key-based access to
 I was responsible for steps 18, 19, and 20. I made a small addition to the node.yml so that worker nodes can get the command they need to run to join the cluster, and I also created the finalization.yml playbook, which configures the MetalLB loadbalancer on the controller node. I also added my public key to the repo.
 
 - Ion: https://github.com/doda25-team1/operation/pull/9
-I worked on setting up kubernetes on the controller VM and making sure 
+I worked on setting up kubernetes on the controller VM and making sure the .kube config file is accessible on both the ctrl and the host machine.
 
 - Alex: I worked on the Step 1-3 and Step 8, defined the Vagrant file. Set up the Ansible provisioner in it and managed etc/hosts dynamically via Jinja.
 
