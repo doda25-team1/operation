@@ -68,6 +68,8 @@
         controller:
         service:
         type: LoadBalancer
+        # Uncomment if we want the LoadBalancer to have a specific IP
+        # LoadBalancerIP: 192.168.56.100
 
 
     - name: Wait for ingress controller to become ready
@@ -76,3 +78,68 @@
         --for=condition=ready pod \
         -l app.kubernetes.io/component=controller \
         --timeout=120s
+
+
+    - name: Add Kubernetes Dashboard Helm repo
+      kubernetes.core.helm_repository:
+        name: kubernetes-dashboard
+        repo_url: https://kubernetes.github.io/dashboard/
+
+
+    - name: Install Kubernetes Dashboard
+      kubernetes.core.helm:
+        name: kubernetes-dashboard
+        chart_ref: kubernetes-dashboard/kubernetes-dashboard
+        release_namespace: kubernetes-dashboard
+        create_namespace: true
+        state: present
+        values:
+          service:
+            type: LoadBalancer
+          ingress:
+            enabled: true
+            className: "nginx"
+            hosts:
+              - host: dashboard.local
+                paths:
+                  - path: /
+                    pathType: Prefix
+            annotations:
+              nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+
+
+    - name: Create admin-user ServiceAccount
+      kubernetes.core.k8s:
+        state: present
+        definition:
+          apiVersion: v1
+          kind: ServiceAccount
+          metadata:
+            name: admin-user
+            namespace: kubernetes-dashboard
+
+
+    - name: Create admin-user ClusterRoleBinding
+      kubernetes.core.k8s:
+        state: present
+        definition:
+          apiVersion: rbac.authorization.k8s.io/v1
+          kind: ClusterRoleBinding
+          metadata:
+            name: admin-user
+          subjects:
+            - kind: ServiceAccount
+              name: admin-user
+              namespace: kubernetes-dashboard
+          roleRef:
+            kind: ClusterRole
+            name: cluster-admin
+            apiGroup: rbac.authorization.k8s.io
+
+
+    - name: Wait for dashboard pods
+      ansible.builtin.shell: |
+        kubectl wait --namespace kubernetes-dashboard \
+          --for=condition=ready pod \
+          -l app.kubernetes.io/name=kubernetes-dashboard \
+          --timeout=120s
