@@ -34,3 +34,45 @@ app:
     tls:
       enabled: false
       secretName: ""
+
+  # ConfigMap for non-sensitive configuration
+  config:
+    enabled: false # Set to true to enable ConfigMap
+    value: "example-config-value" # Placeholder configuration value
+
+  # Secret for sensitive data (e.g., SMTP passwords)
+  secret:
+    enabled: false # Set to true to enable Secret
+    smtpPassword: "changeme" # Placeholder - change during installation
+
+
+    
+modelService:
+  name: sms-model-service
+  replicaCount: 1
+
+  image:
+    repository: ghcr.io/doda25-team1/model-service
+    tag: latest
+    pullPolicy: IfNotPresent
+
+  service:
+    type: ClusterIP
+    port: 8081
+    targetPort: 8081
+  
+  env:
+    MODEL_VERSION: "0.0.1"
+    MODEL_BASE_URL: "https://github.com/doda25-team1/model-service/releases/download"
+
+  volume:
+    enabled: true
+    mountPath: /app/output
+
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 250m
+      memory: 256Mi
