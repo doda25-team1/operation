@@ -35,6 +35,16 @@ app:
       enabled: false
       secretName: ""
 
+  # ConfigMap for non-sensitive configuration
+  config:
+    enabled: false # Set to true to enable ConfigMap
+    value: "example-config-value" # Placeholder configuration value
+
+  # Secret for sensitive data (e.g., SMTP passwords)
+  secret:
+    enabled: false # Set to true to enable Secret
+    smtpPassword: "changeme" # Placeholder - change during installation
+
 
     
 modelService:
@@ -52,8 +62,8 @@ modelService:
     targetPort: 8081
   
   env:
-    MODEL_VERSION: "v1"
-    MODEL_BASE_URL: /app/output
+    MODEL_VERSION: "0.0.1"
+    MODEL_BASE_URL: "https://github.com/doda25-team1/model-service/releases/download"
 
   volume:
     enabled: true

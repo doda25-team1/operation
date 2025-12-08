@@ -28,6 +28,24 @@ spec:
         - name: http
           containerPort: {{ .Values.app.service.targetPort }}
           protocol: TCP
+
+        env:
+        - name: MODEL_HOST
+          value: "http://{{ include "doda-sms-app.fullname" . }}-model:{{ .Values.modelService.service.port }}"
+        {{- if .Values.app.config.enabled }}
+        - name: APP_CONFIG_VALUE
+          valueFrom:
+            configMapKeyRef:
+              name: {{ include "doda-sms-app.fullname" . }}-config
+              key: app-config
+        {{- end }}
+        {{- if .Values.app.secret.enabled }}
+        - name: SMTP_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "doda-sms-app.fullname" . }}-secret
+              key: smtp-password
+        {{- end }}
         # Liveness checks
         livenessProbe:
           httpGet:

@@ -1,0 +1,10 @@
+{{- if .Values.app.config.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "doda-sms-app.fullname" . }}-config
+  labels:
+    {{- include "doda-sms-app.labels" . | nindent 4 }}
+data:
+  app-config: {{ .Values.app.config.value | quote }}
+{{- end }}
