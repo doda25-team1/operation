@@ -51,10 +51,10 @@
       kubernetes.core.k8s:
         state: present
         definition:
-        apiVersion: v1
-        kind: Namespace
-        metadata:
-        name: ingress-nginx
+          apiVersion: v1
+          kind: Namespace
+          metadata:
+            name: ingress-nginx
 
 
     - name: Install Ingress-NGINX via Helm
@@ -65,11 +65,11 @@
         create_namespace: false
         state: present
         values:
-        controller:
-        service:
-        type: LoadBalancer
-        # Uncomment if we want the LoadBalancer to have a specific IP
-        # LoadBalancerIP: 192.168.56.100
+          controller:
+            service:
+              type: LoadBalancer
+              # Uncomment if we want the LoadBalancer to have a specific IP
+              loadBalancerIP: "192.168.56.95" # Fixed IP for ingress
 
 
     - name: Wait for ingress controller to become ready
@@ -136,10 +136,35 @@
             name: cluster-admin
             apiGroup: rbac.authorization.k8s.io
 
+    - name: Create Ingress for Dashboard
+      kubernetes.core.k8s:
+        state: present
+        definition:
+          apiVersion: networking.k8s.io/v1
+          kind: Ingress
+          metadata:
+            name: kubernetes-dashboard
+            namespace: kubernetes-dashboard
+            annotations:
+              nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+              nginx.ingress.kubernetes.io/ssl-redirect: "true"
+          spec:
+            ingressClassName: nginx
+            rules:
+            - host: dashboard.local
+              http:
+                paths:
+                - path: /
+                  pathType: Prefix
+                  backend:
+                    service:
+                      name: kubernetes-dashboard-kong-proxy
+                      port:
+                        number: 443
 
     - name: Wait for dashboard pods
       ansible.builtin.shell: |
         kubectl wait --namespace kubernetes-dashboard \
           --for=condition=ready pod \
-          -l app.kubernetes.io/name=kubernetes-dashboard \
+          -l app.kubernetes.io/instance=kubernetes-dashboard \
           --timeout=120s

@@ -192,3 +192,94 @@ This kubeconfig contains admin credentials and points to the correct API server.
 ```
 
 > If this does not work, copy the config to the default location kubectl expects (e.g. `c:\Users\username\.kube\config`) and run kubectl normally.
+
+### Finalize the Cluster Setup
+
+After provisioning the cluster with `vagrant up`, you need to run the finalization playbook to install MetalLB, Nginx Ingress Controller, and Kubernetes Dashboard:
+
+```bash
+cd operation
+ansible-playbook -i inventory_portforward.ini playbooks/finalization.yml
+```
+
+This will install:
+- **Step 20**: MetalLB (LoadBalancer for bare-metal)
+- **Step 21**: Nginx Ingress Controller
+- **Step 22**: Kubernetes Dashboard
+
+### Testing Steps 20, 21, and 22
+
+After running the finalization playbook, verify that everything is working correctly:
+
+#### Step 20: Verify MetalLB (LoadBalancer)
+
+MetalLB provides LoadBalancer IPs for services in the bare-metal cluster.
+
+```bash
+# Check MetalLB pods are running
+vagrant ssh ctrl -c "kubectl get pods -n metallb-system"
+# Expected: All pods should show STATUS Running
+
+# Check MetalLB IP address pool configuration
+vagrant ssh ctrl -c "kubectl get ipaddresspool -n metallb-system"
+# Expected: 'default-pool' with IP range 192.168.56.90-192.168.56.99
+
+# Check L2Advertisement
+vagrant ssh ctrl -c "kubectl get l2advertisement -n metallb-system"
+# Expected: 'default-advertisement' should exist
+```
+
+#### Step 21: Verify Nginx Ingress Controller
+
+The Nginx Ingress Controller routes HTTP/HTTPS traffic based on Ingress rules.
+
+```bash
+# Check Ingress Controller pods
+vagrant ssh ctrl -c "kubectl get pods -n ingress-nginx"
+# Expected: ingress-nginx-controller pod should be Running
+
+# Check Ingress Controller service and verify EXTERNAL-IP
+vagrant ssh ctrl -c "kubectl get svc -n ingress-nginx"
+# Expected: ingress-nginx-controller should show EXTERNAL-IP: 192.168.56.95
+
+# Test that the Ingress Controller is responding
+vagrant ssh ctrl -c "curl -I http://192.168.56.95"
+# Expected: HTTP response (404 is fine - means it's working)
+```
+
+#### Step 22: Verify Kubernetes Dashboard
+
+The Kubernetes Dashboard provides a web UI to manage the cluster.
+
+```bash
+# Check Dashboard pods are running
+vagrant ssh ctrl -c "kubectl get pods -n kubernetes-dashboard"
+# Expected: All 5 dashboard pods should show STATUS Running
+
+# Check Dashboard Ingress
+vagrant ssh ctrl -c "kubectl get ingress -n kubernetes-dashboard"
+# Expected: kubernetes-dashboard Ingress with host 'dashboard.local'
+
+# Check admin user exists
+vagrant ssh ctrl -c "kubectl get serviceaccount -n kubernetes-dashboard | grep admin-user"
+# Expected: admin-user ServiceAccount should exist
+
+# Generate admin token for dashboard login
+vagrant ssh ctrl -c "kubectl -n kubernetes-dashboard create token admin-user"
+# Expected: Long token string - save this for logging into the dashboard
+```
+
+**Access the Dashboard:**
+
+##### **Step 1:** Add to hosts
+
+Edit the hosts file (`/etc/hosts` on Linux / macOS, `C:\Windows\System32\drivers\etc\hosts` on Windows) and add this line:
+```bash
+192.168.56.95  dashboard.local
+```
+
+##### **Step 2:** Visit dashboard
+
+Go to: `https://dashboard.local`
+
+##### **Step 3:** Login with the admin-user token
