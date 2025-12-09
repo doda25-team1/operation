@@ -43,3 +43,5 @@ I worked on finalising the last few steps i was working on from last week. I was
 
 - Ion: https://github.com/doda25-team1/operation/pull/15 (fixed some files written by Noah), https://github.com/doda25-team1/operation/pull/16 (fixed some files written by Deon and added new ones), https://github.com/doda25-team1/app/pull/9 (app metrics)
 I worked on fixing some of the files from a2 and for a3. Mostly I focuesd on providing metrics for the app. Implemented Counter, Gauge, and Histogram metrics for captured requests.
+
+- Deon https://github.com/doda25-team1/operation/pull/16. Worked on the implementation for deployment and configuration of model service but couldnt test it properly last week due to laptop issues. Tested the changes this week.
