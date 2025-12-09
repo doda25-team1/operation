@@ -1,7 +1,7 @@
 # application config
 app:
   name: sms-app
-  replicaCount: 2
+  replicaCount: 1
   
   # Docker image settings
   image:
@@ -24,7 +24,10 @@ app:
     requests:
       cpu: 250m # 0.25 CPU cores
       memory: 256Mi # 256 megabytes of RAM
-  
+
+  env:
+    BACKEND_URL: "http://model-service:8081"
+
   # Access the app from outside the cluster
   ingress:
     enabled: true
@@ -38,7 +41,7 @@ app:
 
     
 modelService:
-  name: sms-model-service
+  name: model-service
   replicaCount: 1
 
   image:
@@ -52,17 +55,23 @@ modelService:
     targetPort: 8081
   
   env:
-    MODEL_VERSION: "v1"
-    MODEL_BASE_URL: /app/output
+    MODEL_VERSION: "0.0.1"
+    MODEL_BASE_URL: "https://github.com/doda25-team1/model-service/releases/download" 
 
   volume:
     enabled: true
     mountPath: /app/output
-
+  
   resources:
     limits:
-      cpu: 500m
-      memory: 512Mi
+      cpu: 2000m  # ⬅️ Increase to 2 CPU cores
+      memory: 2Gi   # ⬅️ Increase to 2 Gigabytes of RAM
     requests:
-      cpu: 250m
-      memory: 256Mi
+      cpu: 1000m  # ⬅️ Request at least 1 full CPU core
+      memory: 1Gi
+
+storage:
+  # This provides the source path for the volume (the shared VirtualBox folder).
+  # The model-service-deployment.yaml template will combine this 'hostPath' with 
+  # the 'modelService.volume.mountPath'.
+  hostPath: /mnt/vbox_share/model-data

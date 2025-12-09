@@ -35,16 +35,20 @@ spec:
           value: {{ .Values.modelService.env.MODEL_BASE_URL | quote }}
 
         livenessProbe:
-          httpGet:
-            path: /
-            port: http
+          exec:
+            command:
+            - /bin/sh
+            - -c
+            - test -f /proc/1/cmdline  # Checks if the main process exists          
           initialDelaySeconds: 30
           periodSeconds: 10
 
         readinessProbe:
-          httpGet:
-            path: /
-            port: http
+          exec:
+            command:
+            - /bin/sh
+            - -c
+            - test -f /proc/1/cmdline  # Checks if the main process exists          
           initialDelaySeconds: 10
           periodSeconds: 5
 
@@ -52,10 +56,12 @@ spec:
           {{- toYaml .Values.modelService.resources | nindent 12 }}
 
         volumeMounts:
-        - name: model-output
+        - name: model-output-volume
           mountPath: {{ .Values.modelService.volume.mountPath }}
 
       volumes:
-      - name: model-output
-        emptyDir: {}
+      - name: model-output-volume
+        hostPath:
+          path: {{ .Values.storage.hostPath }}
+          type: DirectoryOrCreate
 {{- end }}

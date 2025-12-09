@@ -28,6 +28,11 @@ spec:
         - name: http
           containerPort: {{ .Values.app.service.targetPort }}
           protocol: TCP
+
+        env:
+        - name: BACKEND_URL # The environment variable name the container uses
+          value: {{ .Values.app.env.BACKEND_URL | quote }} # ⬅️ Path changed from .Values.config.backendUrl
+
         # Liveness checks
         livenessProbe:
           httpGet:
