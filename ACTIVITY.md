@@ -1,4 +1,4 @@
-### Week Q2.1 (Nov 13+)
+### Week Q2.2 (Nov 13-23)
 
 - Deon: https://github.com/doda25-team1/app/pull/3, https://github.com/doda25-team1/model-service/pull/3
 I worked on the F8 task of A1, implementing automated versioning and GitHub workflows for both the app and backend. I explored ways to extract versions directly from pom.xml and pyproject.toml, and set up automated image building and pushing. I also added a mechanism to automatically bump the version after each successful workflow run.
@@ -18,7 +18,7 @@ I worked on creting a manually-triggered workflow for training and releasing a n
 - Noah: https://github.com/doda25-team1/lib-version/pull/1, https://github.com/doda25-team1/lib-version/pull/2. 
 I worked on creating the intial lib-version setup, and worked on feature branch versioning for this too.
 
-### Week Q2.2 (Nov 21+)
+### Week Q2.3 (Nov 24-30)
 
 - Deon: https://github.com/doda25-team1/operation/pull/7
 I worked on the steps 4 to 7 of A2. I implemented secure SSH key-based access to all VMs by registering multiple team public keys using Ansible. Then disabled SWAP both immediately and permanently, ensuring Kubernetes compatibility by stopping active swap and removing it from /etc/fstab. Finally, configured Kubernetes networking at the kernel level by loading br_netfilter and overlay modules and enabling required sysctl parameters for IP forwarding and bridged traffic. Made some fixes to run initial vagrant setup
@@ -33,7 +33,7 @@ I worked on setting up kubernetes on the controller VM and making sure the .kube
 
 - Noah: I worked on steps 21-23 of A2, and was trying to test the vagrant setup, but this was tough using WSL.
 
-### Week Q2.3 (Nov 29+)
+### Week Q2.4 (Dec 1-7)
 
 - Alex: https://github.com/doda25-team1/operation/pull/11
 Worked on deployment and service manifests, created ingress, and implemented values.yaml to allow changing hostnames and URLs.
@@ -45,3 +45,19 @@ I worked on finalising the last few steps i was working on from last week. I was
 I worked on fixing some of the files from a2 and for a3. Mostly I focuesd on providing metrics for the app. Implemented Counter, Gauge, and Histogram metrics for captured requests.
 
 - Deon https://github.com/doda25-team1/operation/pull/16. Worked on the implementation for deployment and configuration of model service but couldnt test it properly last week due to laptop issues. Tested the changes this week.
+
+- Daniel: no work. (compensated using week 2)
+
+### Week Q2.5 (Dec 8-14)
+
+- Daniel: https://github.com/doda25-team1/operation/pull/19 I added the configuration for Prometheus such that it monitors the app service and it scrapes for metrics. Additionally, I set the alert manager.
+
+### Week Q2.6 (Dec 15–21)
+
+### Week Q2.7 (Jan 5–11)
+
+### Week Q2.8 (Jan 12–18)
+
+### Week Q2.9 (Jan 19–25)
+
+### Week Q2.10 (Jan 26–27) (final submission!)
