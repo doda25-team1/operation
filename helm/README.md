@@ -4,6 +4,7 @@
 - Kubernetes cluster (Vagrant VMs or Minikube)
 - Helm 3
 - kubectl
+- Istio
 
 ## Installation
 
@@ -49,10 +50,34 @@ Install with custom settings:
 helm install sms-app ./helm \
   --set app.ingress.hostname=your-domain.com \
   --set app.image.tag=v2.0.0 \
-  --set modelService.image.tag=v2.0.0 \
-  --set app.config.enabled=true \
-  --set app.secret.enabled=true \
-  --set app.secret.smtpPassword="your-password"
+  --set app.replicaCount=3 \
+  --set istio.gateway.name=custom-gateway
+```
+
+## Istio Gateway
+
+### Default Gateway
+
+By default:
+- Gateway name: `istio-ingressgateway`
+- Namespace: `istio-system`
+- Selector: `istio: ingressgateway`
+
+### Custom Gateway
+
+If your cluster has different gateway name, when installing override the default values:
+
+```bash
+helm install sms-app ./helm \
+  --set istio.gateway.name=random-blah-blah-gateway-name \
+  --set istio.gateway.namespace=random-blah-blah-namespace
+```
+
+### Turn off
+
+Deploy without Istio, to skip creating Gateway and VirtualService:
+```bash
+helm install sms-app ./helm --set istio.enabled=false
 ```
 
 ## Verifying the Deployment

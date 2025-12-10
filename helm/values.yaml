@@ -1,3 +1,17 @@
+istio:
+  enabled: true
+  # configuration of how accessing the app from outside
+  gateway:
+    # can be overwritten for different clusters
+    name: "istio-ingressgateway"
+    namespace: "istio-system"
+    selector:
+      istio: ingressgateway
+    port:
+      number: 80
+      name: http
+      protocol: HTTP
+
 # application config
 app:
   name: sms-app
@@ -14,6 +28,7 @@ app:
     type: ClusterIP # only accessible within the cluster
     port: 8080 # port other services talk to
     targetPort: 8080 # port app listens to
+    portName: http-web # port name for istio
   
   # Resource limitations
   resources:

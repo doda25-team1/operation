@@ -1,0 +1,24 @@
+{{- if .Values.istio.enabled }}
+# allows external traffic into the service mesh
+apiVersion: networking.istio.io/v1beta1
+kind: Gateway
+metadata:
+  name: {{ include "doda-sms-app.fullname" . }}-gateway
+  labels:
+    {{- include "doda-sms-app.labels" . | nindent 4 }}
+spec:
+  # Reference to the actual IngressGateway deployment
+  # This is not part of Helm chart, it's deployed separately in the cluster
+  # The name here has to match the gateway that exists in the cluster
+  selector:
+    {{- toYaml .Values.istio.gateway.selector | nindent 4 }}
+  # ports and protocols gateway accepts
+  servers:
+  - port:
+      number: {{ .Values.istio.gateway.port.number }}
+      name: {{ .Values.istio.gateway.port.name }}
+      protocol: {{ .Values.istio.gateway.port.protocol }}
+    # hostnames this gateway serves
+    hosts:
+    - "*" # all, if specific use smth like 'sms-app.example.com'
+{{- end }}
