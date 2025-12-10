@@ -1,0 +1,53 @@
+{{- if and .Values.monitoring.enabled .Values.monitoring.alertmanager.enabled }}
+{{- $alertmanagerName := printf "%s-alertmanager" (include "doda-sms-app.fullname" .) -}}
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ $alertmanagerName }}-config
+  labels:
+    {{- include "doda-sms-app.labels" . | nindent 4 }}
+stringData:
+  alertmanager.yaml: |
+    route:
+      receiver: {{ .Values.monitoring.alertmanager.config.receiver }}
+      group_wait: 30s
+      group_interval: 5m
+      repeat_interval: 3h
+    receivers:
+      - name: {{ .Values.monitoring.alertmanager.config.receiver }}
+        webhook_configs:
+          - url: {{ .Values.monitoring.alertmanager.config.webhookUrl }}
+            send_resolved: true
+---
+apiVersion: monitoring.coreos.com/v1
+kind: Alertmanager
+metadata:
+  name: {{ $alertmanagerName }}
+  labels:
+    release: {{ .Values.app.prometheus.releaseLabel }}
+    {{- include "doda-sms-app.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.monitoring.alertmanager.replicaCount }}
+  configSecret: {{ $alertmanagerName }}-config
+  {{- with .Values.monitoring.alertmanager.resources }}
+  resources:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $alertmanagerName }}
+  labels:
+    release: {{ .Values.app.prometheus.releaseLabel }}
+    {{- include "doda-sms-app.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.monitoring.alertmanager.service.type }}
+  ports:
+  - name: web
+    port: {{ .Values.monitoring.alertmanager.service.port }}
+    targetPort: web
+  selector:
+    app.kubernetes.io/name: alertmanager
+    alertmanager: {{ $alertmanagerName }}
+{{- end }}

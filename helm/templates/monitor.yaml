@@ -1,21 +1,18 @@
-{{- if .Values.app.prometheus.serviceMonitor.enabled }}
+{{- if and .Values.monitoring.enabled .Values.app.prometheus.serviceMonitor.enabled }}
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
   name: {{ include "doda-sms-app.fullname" . }}-monitor
   labels:
-    # 1. PROMETHEUS SELECTOR: MUST MATCH the Prometheus server configuration in values.yaml
-    release: {{ .Values.app.prometheus.releaseLabel }} 
-    # Standard Helm chart labels
+    release: {{ .Values.app.prometheus.releaseLabel }}
     {{- include "doda-sms-app.labels" . | nindent 4 }}
 spec:
   selector:
     matchLabels:
-      {{- include "doda-sms-app.selectorLabels" . | nindent 6 }} 
-      app.kubernetes.io/component: app # Matches the component label on your Service
-  
+      {{- include "doda-sms-app.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: app
   endpoints:
-    - port: http             
+    - port: http
       path: /sms/metrics
-      interval: {{ .Values.app.prometheus.serviceMonitor.interval }}       
+      interval: {{ .Values.app.prometheus.serviceMonitor.interval }}
 {{- end }}
