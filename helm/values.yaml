@@ -110,6 +110,15 @@ monitoring:
     config:
       receiver: default
       webhookUrl: http://alert-logger.default.svc.cluster.local:8080/
+    email:
+      enabled: false
+      receiver: email
+      to: you@example.com
+      from: alerts@example.com
+      smarthost: smtp.example.com:587
+      requireTls: true
+      username: alerts@example.com
+      password: "" # set via Helm value; stored in a Secret and mounted into Alertmanager
     resources: {}
 
   rules:

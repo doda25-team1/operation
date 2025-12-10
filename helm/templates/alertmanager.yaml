@@ -1,5 +1,18 @@
 {{- if and .Values.monitoring.enabled .Values.monitoring.alertmanager.enabled }}
 {{- $alertmanagerName := printf "%s-alertmanager" (include "doda-sms-app.fullname" .) -}}
+{{- $email := .Values.monitoring.alertmanager.email -}}
+{{- $emailEnabled := and .Values.monitoring.alertmanager.enabled $email.enabled -}}
+{{- if and $emailEnabled (ne $email.password "") }}
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ $alertmanagerName }}-smtp
+  labels:
+    {{- include "doda-sms-app.labels" . | nindent 4 }}
+stringData:
+  smtp_password: "{{ $email.password }}"
+---
+{{- end }}
 apiVersion: v1
 kind: Secret
 metadata:
@@ -15,9 +28,25 @@ stringData:
       repeat_interval: 3h
     receivers:
       - name: {{ .Values.monitoring.alertmanager.config.receiver }}
+        {{- if .Values.monitoring.alertmanager.config.webhookUrl }}
         webhook_configs:
           - url: {{ .Values.monitoring.alertmanager.config.webhookUrl }}
             send_resolved: true
+        {{- end }}
+      {{- if $emailEnabled }}
+      - name: {{ $email.receiver }}
+        email_configs:
+          - to: {{ $email.to }}
+            from: {{ $email.from }}
+            smarthost: {{ $email.smarthost }}
+            require_tls: {{ $email.requireTls }}
+            {{- if $email.username }}
+            auth_username: {{ $email.username }}
+            {{- end }}
+            {{- if and $email.password (ne $email.password "") }}
+            auth_password_file: /etc/alertmanager/secrets/smtp_password
+            {{- end }}
+      {{- end }}
 ---
 apiVersion: monitoring.coreos.com/v1
 kind: Alertmanager
@@ -29,6 +58,10 @@ metadata:
 spec:
   replicas: {{ .Values.monitoring.alertmanager.replicaCount }}
   configSecret: {{ $alertmanagerName }}-config
+  {{- if and $emailEnabled (ne $email.password "") }}
+  secrets:
+  - {{ $alertmanagerName }}-smtp
+  {{- end }}
   {{- with .Values.monitoring.alertmanager.resources }}
   resources:
     {{- toYaml . | nindent 4 }}
