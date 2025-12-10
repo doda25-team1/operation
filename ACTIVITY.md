@@ -33,6 +33,9 @@ I worked on setting up kubernetes on the controller VM and making sure the .kube
 
 - Noah: I worked on steps 21-23 of A2, and was trying to test the vagrant setup, but this was tough using WSL.
 
+- Nicolas: https://github.com/doda25-team1/operation/pull/8
+    Steps 8-11. I worked on implementing the Kubernetes cluster setup using the Ansible playbooks. Configured the containerd as the container runtime and starting kublet.
+
 ### Week Q2.4 (Dec 1-7)
 
 - Alex: https://github.com/doda25-team1/operation/pull/11
@@ -47,6 +50,9 @@ I worked on fixing some of the files from a2 and for a3. Mostly I focuesd on pro
 - Deon https://github.com/doda25-team1/operation/pull/16. Worked on the implementation for deployment and configuration of model service but couldnt test it properly last week due to laptop issues. Tested the changes this week.
 
 - Daniel: no work. (compensated using week 2)
+
+- Nicolas: https://github.com/doda25-team1/operation/pull/13
+    Steps 19-20. I worked on installing the Ingress Controller and Kubernetes Dashboard, configured LoadBalancer in finalization.yml
 
 ### Week Q2.5 (Dec 8-14)
 
