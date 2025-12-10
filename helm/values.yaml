@@ -49,7 +49,7 @@ app:
     serviceMonitor:
       enabled: true
       interval: 30s
-    releaseLabel: operation
+    releaseLabel: sms-app-prom
     
 modelService:
   name: sms-model-service
