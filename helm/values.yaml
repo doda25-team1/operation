@@ -45,7 +45,11 @@ app:
     enabled: false # Set to true to enable Secret
     smtpPassword: "changeme" # Placeholder - change during installation
 
-
+  prometheus:
+    serviceMonitor:
+      enabled: true
+      interval: 30s
+    releaseLabel: operation
     
 modelService:
   name: sms-model-service
