@@ -1,12 +1,14 @@
 {{- if and .Values.monitoring.enabled .Values.monitoring.alertmanager.enabled }}
 {{- $alertmanagerName := printf "%s-alertmanager" (include "doda-sms-app.fullname" .) -}}
+{{- $smtpSecretName := printf "%s-smtp" $alertmanagerName -}}
 {{- $email := .Values.monitoring.alertmanager.email -}}
 {{- $emailEnabled := and .Values.monitoring.alertmanager.enabled $email.enabled -}}
+{{- $mergeEmailIntoDefault := and $emailEnabled (eq .Values.monitoring.alertmanager.config.receiver $email.receiver) -}}
 {{- if and $emailEnabled (ne $email.password "") }}
 apiVersion: v1
 kind: Secret
 metadata:
-  name: {{ $alertmanagerName }}-smtp
+  name: {{ $smtpSecretName }}
   labels:
     {{- include "doda-sms-app.labels" . | nindent 4 }}
 stringData:
@@ -33,7 +35,20 @@ stringData:
           - url: {{ .Values.monitoring.alertmanager.config.webhookUrl }}
             send_resolved: true
         {{- end }}
-      {{- if $emailEnabled }}
+        {{- if $mergeEmailIntoDefault }}
+        email_configs:
+          - to: {{ $email.to }}
+            from: {{ $email.from }}
+            smarthost: {{ $email.smarthost }}
+            require_tls: {{ $email.requireTls }}
+            {{- if $email.username }}
+            auth_username: {{ $email.username }}
+            {{- end }}
+            {{- if and $email.password (ne $email.password "") }}
+            auth_password_file: /etc/alertmanager/secrets/{{ $smtpSecretName }}/smtp_password
+            {{- end }}
+        {{- end }}
+      {{- if and $emailEnabled (not $mergeEmailIntoDefault) }}
       - name: {{ $email.receiver }}
         email_configs:
           - to: {{ $email.to }}
@@ -44,7 +59,7 @@ stringData:
             auth_username: {{ $email.username }}
             {{- end }}
             {{- if and $email.password (ne $email.password "") }}
-            auth_password_file: /etc/alertmanager/secrets/smtp_password
+            auth_password_file: /etc/alertmanager/secrets/{{ $smtpSecretName }}/smtp_password
             {{- end }}
       {{- end }}
 ---
@@ -60,7 +75,7 @@ spec:
   configSecret: {{ $alertmanagerName }}-config
   {{- if and $emailEnabled (ne $email.password "") }}
   secrets:
-  - {{ $alertmanagerName }}-smtp
+  - {{ $smtpSecretName }}
   {{- end }}
   {{- with .Values.monitoring.alertmanager.resources }}
   resources:

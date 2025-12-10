@@ -109,7 +109,7 @@ monitoring:
       port: 9093
     config:
       receiver: default
-      webhookUrl: http://alert-logger.default.svc.cluster.local:8080/
+      webhookUrl: ""
     email:
       enabled: false
       receiver: email
