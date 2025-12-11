@@ -1,0 +1,101 @@
+{{- if and .Values.monitoring.enabled .Values.monitoring.alertmanager.enabled }}
+{{- $alertmanagerName := printf "%s-alertmanager" (include "doda-sms-app.fullname" .) -}}
+{{- $smtpSecretName := printf "%s-smtp" $alertmanagerName -}}
+{{- $email := .Values.monitoring.alertmanager.email -}}
+{{- $emailEnabled := and .Values.monitoring.alertmanager.enabled $email.enabled -}}
+{{- $mergeEmailIntoDefault := and $emailEnabled (eq .Values.monitoring.alertmanager.config.receiver $email.receiver) -}}
+{{- if and $emailEnabled (ne $email.password "") }}
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ $smtpSecretName }}
+  labels:
+    {{- include "doda-sms-app.labels" . | nindent 4 }}
+stringData:
+  smtp_password: "{{ $email.password }}"
+---
+{{- end }}
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ $alertmanagerName }}-config
+  labels:
+    {{- include "doda-sms-app.labels" . | nindent 4 }}
+stringData:
+  alertmanager.yaml: |
+    route:
+      receiver: {{ .Values.monitoring.alertmanager.config.receiver }}
+      group_wait: 30s
+      group_interval: 5m
+      repeat_interval: 3h
+    receivers:
+      - name: {{ .Values.monitoring.alertmanager.config.receiver }}
+        {{- if .Values.monitoring.alertmanager.config.webhookUrl }}
+        webhook_configs:
+          - url: {{ .Values.monitoring.alertmanager.config.webhookUrl }}
+            send_resolved: true
+        {{- end }}
+        {{- if $mergeEmailIntoDefault }}
+        email_configs:
+          - to: {{ $email.to }}
+            from: {{ $email.from }}
+            smarthost: {{ $email.smarthost }}
+            require_tls: {{ $email.requireTls }}
+            {{- if $email.username }}
+            auth_username: {{ $email.username }}
+            {{- end }}
+            {{- if and $email.password (ne $email.password "") }}
+            auth_password_file: /etc/alertmanager/secrets/{{ $smtpSecretName }}/smtp_password
+            {{- end }}
+        {{- end }}
+      {{- if and $emailEnabled (not $mergeEmailIntoDefault) }}
+      - name: {{ $email.receiver }}
+        email_configs:
+          - to: {{ $email.to }}
+            from: {{ $email.from }}
+            smarthost: {{ $email.smarthost }}
+            require_tls: {{ $email.requireTls }}
+            {{- if $email.username }}
+            auth_username: {{ $email.username }}
+            {{- end }}
+            {{- if and $email.password (ne $email.password "") }}
+            auth_password_file: /etc/alertmanager/secrets/{{ $smtpSecretName }}/smtp_password
+            {{- end }}
+      {{- end }}
+---
+apiVersion: monitoring.coreos.com/v1
+kind: Alertmanager
+metadata:
+  name: {{ $alertmanagerName }}
+  labels:
+    release: {{ .Values.app.prometheus.releaseLabel }}
+    {{- include "doda-sms-app.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.monitoring.alertmanager.replicaCount }}
+  configSecret: {{ $alertmanagerName }}-config
+  {{- if and $emailEnabled (ne $email.password "") }}
+  secrets:
+  - {{ $smtpSecretName }}
+  {{- end }}
+  {{- with .Values.monitoring.alertmanager.resources }}
+  resources:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $alertmanagerName }}
+  labels:
+    release: {{ .Values.app.prometheus.releaseLabel }}
+    {{- include "doda-sms-app.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.monitoring.alertmanager.service.type }}
+  ports:
+  - name: web
+    port: {{ .Values.monitoring.alertmanager.service.port }}
+    targetPort: web
+  selector:
+    app.kubernetes.io/name: alertmanager
+    alertmanager: {{ $alertmanagerName }}
+{{- end }}

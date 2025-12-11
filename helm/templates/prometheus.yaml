@@ -1,21 +1,42 @@
-{{- if .Values.app.prometheus.serviceMonitor.enabled }}
+{{- if and .Values.monitoring.enabled .Values.monitoring.prometheus.enabled }}
+{{- $promName := printf "%s-prometheus" (include "doda-sms-app.fullname" .) -}}
+{{- $saName := default $promName .Values.monitoring.prometheus.serviceAccount.name -}}
 apiVersion: monitoring.coreos.com/v1
-kind: ServiceMonitor
+kind: Prometheus
 metadata:
-  name: {{ include "doda-sms-app.fullname" . }}-monitor
+  name: {{ $promName }}
   labels:
-    # 1. PROMETHEUS SELECTOR: MUST MATCH the Prometheus server configuration in values.yaml
-    release: {{ .Values.app.prometheus.releaseLabel }} 
-    # Standard Helm chart labels
+    release: {{ .Values.app.prometheus.releaseLabel }}
     {{- include "doda-sms-app.labels" . | nindent 4 }}
 spec:
-  selector:
+  replicas: {{ .Values.monitoring.prometheus.replicaCount }}
+  serviceAccountName: {{ $saName }}
+  retention: {{ .Values.monitoring.prometheus.retention }}
+  scrapeInterval: {{ .Values.monitoring.prometheus.scrapeInterval }}
+  evaluationInterval: {{ .Values.monitoring.prometheus.evaluationInterval }}
+  serviceMonitorSelector:
     matchLabels:
-      {{- include "doda-sms-app.selectorLabels" . | nindent 6 }} 
-      app.kubernetes.io/component: app # Matches the component label on your Service
-  
-  endpoints:
-    - port: http             
-      path: /sms/metrics
-      interval: {{ .Values.app.prometheus.serviceMonitor.interval }}       
+      release: {{ .Values.app.prometheus.releaseLabel }}
+  ruleSelector:
+    matchLabels:
+      release: {{ .Values.app.prometheus.releaseLabel }}
+  alerting:
+    alertmanagers:
+    - namespace: {{ .Release.Namespace }}
+      name: {{ printf "%s-alertmanager" (include "doda-sms-app.fullname" .) }}
+      port: web
+  {{- with .Values.monitoring.prometheus.resources }}
+  resources:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- if .Values.monitoring.prometheus.storage.enabled }}
+  storage:
+    volumeClaimTemplate:
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: {{ .Values.monitoring.prometheus.storage.size }}
+  {{- end }}
 {{- end }}

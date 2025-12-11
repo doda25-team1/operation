@@ -119,6 +119,16 @@ curl http://localhost:8080/
 pkill -f "port-forward"
 ```
 
+### Monitoring & Alerting
+- Prometheus + Alertmanager are deployed via the Prometheus Operator CRDs (toggle with `monitoring.enabled`).
+- ServiceMonitor (`monitor.yaml`) scrapes `/sms/metrics` on the app service using the `release` label `sms-app-prom`.
+- High traffic alert: `HighRequestRate` fires when `app_http_requests_total` exceeds the configured per-minute threshold for 2 minutes (`monitoring.rules.requestRate.*`).
+- Default receiver posts to `http://alert-logger.default.svc.cluster.local:8080/` (override in `monitoring.alertmanager.config.webhookUrl`).
+- Optional email receiver: set `monitoring.alertmanager.email.enabled=true`, fill `to/from/smarthost/username` and `password`; password is stored in a Secret and mounted into Alertmanager.
+- Access UIs for quick checks:
+  - Prometheus: `kubectl port-forward svc/<release>-doda-sms-app-prometheus 9090:9090`
+  - Alertmanager: `kubectl port-forward svc/<release>-doda-sms-app-alertmanager 9093:9093`
+
 ## Configurable Settings
 
 ### Basic Settings

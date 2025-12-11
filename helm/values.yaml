@@ -80,3 +80,50 @@ modelService:
     requests:
       cpu: 250m
       memory: 256Mi
+
+monitoring:
+  enabled: true
+
+  prometheus:
+    enabled: true
+    replicaCount: 1
+    retention: 24h
+    scrapeInterval: 30s
+    evaluationInterval: 30s
+    serviceAccount:
+      create: true
+      name: ""
+    service:
+      type: ClusterIP
+      port: 9090
+    storage:
+      enabled: false
+      size: 2Gi
+    resources: {}
+
+  alertmanager:
+    enabled: true
+    replicaCount: 1
+    service:
+      type: ClusterIP
+      port: 9093
+    config:
+      receiver: default
+      webhookUrl: ""
+    email:
+      enabled: false
+      receiver: email
+      to: you@example.com
+      from: alerts@example.com
+      smarthost: smtp.example.com:587
+      requireTls: true
+      username: alerts@example.com
+      password: "" # set via Helm value; stored in a Secret and mounted into Alertmanager
+    resources: {}
+
+  rules:
+    requestRate:
+      enabled: true
+      thresholdPerMinute: 15
+      for: 2m
+      severity: warning

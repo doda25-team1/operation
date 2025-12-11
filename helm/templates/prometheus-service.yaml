@@ -1,0 +1,19 @@
+{{- if and .Values.monitoring.enabled .Values.monitoring.prometheus.enabled }}
+{{- $promName := printf "%s-prometheus" (include "doda-sms-app.fullname" .) -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $promName }}
+  labels:
+    release: {{ .Values.app.prometheus.releaseLabel }}
+    {{- include "doda-sms-app.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.monitoring.prometheus.service.type }}
+  ports:
+  - name: web
+    port: {{ .Values.monitoring.prometheus.service.port }}
+    targetPort: web
+  selector:
+    app.kubernetes.io/name: prometheus
+    prometheus: {{ $promName }}
+{{- end }}

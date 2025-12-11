@@ -1,0 +1,21 @@
+{{- if and .Values.monitoring.enabled .Values.monitoring.rules.requestRate.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: {{ include "doda-sms-app.fullname" . }}-rules
+  labels:
+    release: {{ .Values.app.prometheus.releaseLabel }}
+    {{- include "doda-sms-app.labels" . | nindent 4 }}
+spec:
+  groups:
+  - name: sms-app.rules
+    rules:
+    - alert: HighRequestRate
+      expr: sum(rate(app_http_requests_total[1m])) * 60 > {{ .Values.monitoring.rules.requestRate.thresholdPerMinute }}
+      for: {{ .Values.monitoring.rules.requestRate.for }}
+      labels:
+        severity: {{ .Values.monitoring.rules.requestRate.severity }}
+      annotations:
+        summary: "SMS app receiving high traffic"
+        description: "The SMS app is serving over {{ .Values.monitoring.rules.requestRate.thresholdPerMinute }} requests per minute for more than {{ .Values.monitoring.rules.requestRate.for }}."
+{{- end }}
