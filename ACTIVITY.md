@@ -31,15 +31,18 @@ I worked on setting up kubernetes on the controller VM and making sure the .kube
 
 - Alex: I worked on the Step 1-3 and Step 8, defined the Vagrant file. Set up the Ansible provisioner in it and managed etc/hosts dynamically via Jinja.
 
-- Noah: I worked on steps 21-23 of A2, and was trying to test the vagrant setup, but this was tough using WSL.
-
 - Nicolas: https://github.com/doda25-team1/operation/pull/8
     Steps 8-11. I worked on implementing the Kubernetes cluster setup using the Ansible playbooks. Configured the containerd as the container runtime and starting kublet.
+
+- Noah: I worked on steps 21-23 of A2, and was trying to test the vagrant setup, but this was tough using WSL.
 
 ### Week Q2.4 (Dec 1-7)
 
 - Alex: https://github.com/doda25-team1/operation/pull/11
 Worked on deployment and service manifests, created ingress, and implemented values.yaml to allow changing hostnames and URLs.
+
+- Nicolas: https://github.com/doda25-team1/operation/pull/13
+    Steps 19-20. I worked on installing the Nginx Ingress Controller and Kubernetes Dashboard using Ansible playbooks. Configured MetalLB integration with a LoadBalancer IP for the ingress controller, set up the dashboard with an admin-user ServiceAccount and ClusterRoleBinding, and created an ingress route to expose the dashboard at dashboard.local. Modified finalization.yml (97 lines) and Vagrantfile to add the finalization playbook provisioning.
 
 - Noah: https://github.com/doda25-team1/operation/pull/12
 I worked on finalising the last few steps i was working on from last week. I was not able to start with A3 as I was tasked to finalise that task too.
@@ -50,9 +53,6 @@ I worked on fixing some of the files from a2 and for a3. Mostly I focuesd on pro
 - Deon https://github.com/doda25-team1/operation/pull/16. Worked on the implementation for deployment and configuration of model service but couldnt test it properly last week due to laptop issues. Tested the changes this week.
 
 - Daniel: no work. (compensated using week 2)
-
-- Nicolas: https://github.com/doda25-team1/operation/pull/13
-    Steps 19-20. I worked on installing the Ingress Controller and Kubernetes Dashboard, configured LoadBalancer in finalization.yml
 
 ### Week Q2.5 (Dec 8-14)
 
