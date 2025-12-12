@@ -106,6 +106,8 @@ spec:
         env:
         - name: MODEL_HOST
           value: "http://{{ include "doda-sms-app.fullname" . }}-model:{{ .Values.modelService.service.port }}"
+        - name: APP_VERSION
+          value: "{{ .Values.app.version | default "v1" }}"
         {{- if .Values.app.config.enabled }}
         - name: APP_CONFIG_VALUE
           valueFrom:
