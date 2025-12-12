@@ -55,5 +55,10 @@ spec:
 
       volumes:
       - name: model-output
+        {{- if .Values.persistence.enabled }}
+        persistentVolumeClaim:
+          claimName: model-service-pvc
+        {{- else }}
         emptyDir: {}
+        {{- end }}
 {{- end }}
