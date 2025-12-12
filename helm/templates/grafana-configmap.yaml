@@ -1,0 +1,44 @@
+{{- if .Values.monitoring.grafana.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "doda-sms-app.fullname" . }}-grafana-config
+  labels:
+    {{- include "doda-sms-app.labels" . | nindent 4 }}
+    app.kubernetes.io/component: grafana
+data:
+  grafana.ini: |
+    [analytics]
+    check_for_updates = false
+
+    [log]
+    mode = console
+
+    [paths]
+    provisioning = /etc/grafana/provisioning
+
+  {{- if .Values.monitoring.grafana.datasources.enabled }}
+  datasources.yaml: |
+    apiVersion: 1
+    datasources:
+      - name: Prometheus
+        type: prometheus
+        access: proxy
+        url: {{ .Values.monitoring.grafana.datasources.prometheusUrl }}
+        isDefault: true
+        editable: false
+  {{- end }}
+
+  dashboards.yaml: |
+    apiVersion: 1
+    providers:
+      - name: 'default'
+        orgId: 1
+        folder: ''
+        type: file
+        disableDeletion: false
+        updateIntervalSeconds: 10
+        allowUiUpdates: true
+        options:
+          path: /var/lib/grafana/dashboards
+{{- end }}
