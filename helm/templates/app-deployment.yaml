@@ -63,4 +63,16 @@ spec:
         # CPU and memory limits (from values.yaml)
         resources:
           {{- toYaml .Values.app.resources | nindent 10 }}
+        {{- if .Values.persistence.enabled }}
+        volumeMounts:
+        - name: shared-storage
+          mountPath: {{ .Values.persistence.hostPath.path }}
+        {{- end }}
+      {{- if .Values.persistence.enabled }}
+      volumes:
+      - name: shared-storage
+        hostPath:
+          path: {{ .Values.persistence.hostPath.path }}
+          type: DirectoryOrCreate
+      {{- end }}
 {{- end }}
