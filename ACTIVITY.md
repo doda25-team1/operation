@@ -37,6 +37,8 @@ Step 8: https://github.com/doda25-team1/operation/commit/ed5fe512027dd012ec72b63
 - Nicolas: https://github.com/doda25-team1/operation/pull/8
     Steps 8-11. I worked on implementing the Kubernetes cluster setup using the Ansible playbooks. Configured the containerd as the container runtime and starting kublet.
 
+- Nicolas: https://github.com/doda25-team1/operation/pull/8 - This pull request can be ignored due to a mistake i commited the wrong branch. This did not affect my coleagues work directly but delayed my own having to remove this pull and re-create my assignment 3 graphana part.
+
 - Noah: I worked on steps 21-23 of A2, and was trying to test the vagrant setup, but this was tough using WSL.
 
 - Noah: I worked on steps 21-23 of A2, and was trying to test the vagrant setup, but this was tough using WSL.
