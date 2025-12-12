@@ -2,7 +2,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: app-service
+  name: {{ include "doda-sms-app.fullname" . }}-app
   labels:
     {{- include "doda-sms-app.labels" . | nindent 4 }}
     app.kubernetes.io/component: app

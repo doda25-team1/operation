@@ -32,7 +32,7 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: app-service
+            name: {{ include "doda-sms-app.fullname" . }}-app
             port:
               number: {{ .Values.app.service.port }}
 {{- end }}
