@@ -1,17 +1,3 @@
-istio:
-  enabled: true
-  # configuration of how accessing the app from outside
-  gateway:
-    # can be overwritten for different clusters
-    name: "istio-ingressgateway"
-    namespace: "istio-system"
-    selector:
-      istio: ingressgateway
-    port:
-      number: 80
-      name: http
-      protocol: HTTP
-
 # application config
 app:
   name: sms-app
@@ -97,7 +83,7 @@ modelService:
       memory: 256Mi
 
 persistence:
-  enabled: true
+  enabled: false  # Disabled for testing - /mnt/shared doesn't exist on nodes
   storageType: hostPath
   hostPath:
     path: /mnt/shared
@@ -106,7 +92,7 @@ persistence:
   storageClass: manual
 
 monitoring:
-  enabled: true
+  enabled: false  # Disabled - Prometheus Operator CRDs not installed
 
   prometheus:
     enabled: true
@@ -173,7 +159,7 @@ monitoring:
 
     dashboards:
       enabled: true
-      
+
     resources:
       limits:
         cpu: 200m
@@ -181,3 +167,33 @@ monitoring:
       requests:
         cpu: 100m
         memory: 128Mi
+
+# Istio Service Mesh Configuration
+istio:
+  enabled: true # enable/disable Istio resources (Istio is installed during cluster provisioning)
+
+  # Traffic split configuration for canary releases
+  trafficSplit:
+    stable: 90 # Percentage of traffic to v1 (stable version)
+    experiment: 10 # Percentage of traffic to v2 (experiment version)
+
+  # Sticky session configuration using consistent hashing
+  stickySession:
+    headerName: "x-user-id" # Header used for consistent hashing
+
+  # Gateway configuration - controls how external traffic enters the mesh
+  gateway:
+    enabled: true # Set to true to route traffic through Istio Gateway
+    # Gateway resource references the existing IngressGateway (installed during provisioning)
+    name: "istio-ingressgateway" # Name of the gateway (can be overwritten for different clusters)
+    namespace: "istio-system" # Namespace where IngressGateway is deployed
+    # Selector to match the IngressGateway pods
+    selector:
+      istio: ingressgateway
+    # Port configuration
+    port:
+      number: 80
+      name: http
+      protocol: HTTP
+    # Host to match in VirtualService
+    host: "*" # Accept all hosts, or specify like "sms-app.example.com"

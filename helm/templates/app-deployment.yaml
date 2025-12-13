@@ -1,4 +1,77 @@
 {{- if .Values.app }}
+{{- if .Values.istio.enabled }}
+{{- range $version := list "v1" "v2" }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "doda-sms-app.fullname" $ }}-app-{{ $version }}
+  labels:
+    {{- include "doda-sms-app.labels" $ | nindent 4 }}
+    app.kubernetes.io/component: app
+    version: {{ $version }}
+spec:
+  replicas: {{ if eq $version "v1" }}{{ $.Values.app.replicaCount }}{{ else }}1{{ end }}  # for experiment use only one replica
+  selector:
+    matchLabels:
+      {{- include "doda-sms-app.selectorLabels" $ | nindent 6 }}
+      app.kubernetes.io/component: app
+      version: {{ $version }}
+  # Template for each pod
+  template:
+    metadata:
+      labels:
+        {{- include "doda-sms-app.selectorLabels" $ | nindent 8 }}
+        app.kubernetes.io/component: app
+        version: {{ $version }}
+    spec:
+      containers:
+      - name: {{ $.Values.app.name }}
+        # Docker image to use
+        image: "{{ $.Values.app.image.repository }}:{{ $.Values.app.image.tag }}"
+        imagePullPolicy: {{ $.Values.app.image.pullPolicy }}
+        ports:
+        - name: http
+          containerPort: {{ $.Values.app.service.targetPort }}
+          protocol: TCP
+
+        env:
+        - name: MODEL_HOST
+          value: "http://{{ include "doda-sms-app.fullname" $ }}-model:{{ $.Values.modelService.service.port }}"
+        {{- if $.Values.app.config.enabled }}
+        - name: APP_CONFIG_VALUE
+          valueFrom:
+            configMapKeyRef:
+              name: {{ include "doda-sms-app.fullname" $ }}-config
+              key: app-config
+        {{- end }}
+        {{- if $.Values.app.secret.enabled }}
+        - name: SMTP_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "doda-sms-app.fullname" $ }}-secret
+              key: smtp-password
+        {{- end }}
+        # Liveness checks
+        livenessProbe:
+          httpGet:
+            path: /
+            port: http
+          initialDelaySeconds: 30 # Wait 30 seconds before first check
+          periodSeconds: 10 # Check every 10 seconds after that
+        # Readiness cheks
+        readinessProbe:
+          httpGet:
+            path: /
+            port: http
+          initialDelaySeconds: 10 # Wait 10 seconds before first check
+          periodSeconds: 5 # Check every 5 seconds
+        # CPU and memory limits (from values.yaml)
+        resources:
+          {{- toYaml $.Values.app.resources | nindent 10 }}
+{{- end }}
+{{- else }}
+# original deployment if Istio disabled
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -19,6 +92,7 @@ spec:
         {{- include "doda-sms-app.selectorLabels" . | nindent 8 }}
         app.kubernetes.io/component: app
     spec:
+{{- end }}
       containers:
       - name: {{ .Values.app.name }}
         # Docker image to use
