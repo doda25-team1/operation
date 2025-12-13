@@ -12,7 +12,7 @@ spec:
   - port: {{ .Values.app.service.port }}
     targetPort: {{ .Values.app.service.targetPort }}
     protocol: TCP
-    name: http
+    name: {{ .Values.app.service.portName }}
   selector:
     {{- include "doda-sms-app.selectorLabels" . | nindent 4 }}
     app.kubernetes.io/component: app
