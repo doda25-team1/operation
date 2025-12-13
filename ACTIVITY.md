@@ -58,6 +58,10 @@ I worked on fixing some of the files from a2 and for a3. Mostly I focuesd on pro
 
 - Daniel: https://github.com/doda25-team1/operation/pull/19 I added the configuration for Prometheus such that it monitors the app service and it scrapes for metrics. Additionally, I set the alert manager.
 
+- Deon: https://github.com/doda25-team1/operation/pull/18 -> Implemented ServiceMonitor for monitoring deployments. 
+https://github.com/doda25-team1/operation/pull/21 -> Added changes for shared volume to persist changes for all pods.
+Additionally, tested end to end till prometheus montoring on minikube cluster
+
 ### Week Q2.6 (Dec 15–21)
 
 ### Week Q2.7 (Jan 5–11)
