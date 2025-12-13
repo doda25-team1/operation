@@ -9,7 +9,7 @@
 
 set -e
 
-echo "🚀 Running Istio Traffic Routing Tests..."
+echo "Running Istio Traffic Routing Tests..."
 echo ""
 
 # Use the simple test script by default (no buffering issues)
