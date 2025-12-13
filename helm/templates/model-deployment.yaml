@@ -1,4 +1,74 @@
 {{- if .Values.modelService }}
+{{- if .Values.istio.enabled }}
+{{- range $version := list "v1" "v2" }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "doda-sms-app.fullname" $ }}-model-{{ $version }}
+  labels:
+    {{- include "doda-sms-app.labels" $ | nindent 4 }}
+    app.kubernetes.io/component: model-service
+    version: {{ $version }}
+spec:
+  replicas: {{ if eq $version "v1" }}{{ $.Values.modelService.replicaCount }}{{ else }}1{{ end }}
+  selector:
+    matchLabels:
+      {{- include "doda-sms-app.selectorLabels" $ | nindent 6 }}
+      app.kubernetes.io/component: model-service
+      version: {{ $version }}
+  template:
+    metadata:
+      labels:
+        {{- include "doda-sms-app.selectorLabels" $ | nindent 8 }}
+        app.kubernetes.io/component: model-service
+        version: {{ $version }}
+    spec:
+      containers:
+      - name: {{ $.Values.modelService.name }}
+        image: "{{ $.Values.modelService.image.repository }}:{{ $.Values.modelService.image.tag }}"
+        imagePullPolicy: {{ $.Values.modelService.image.pullPolicy }}
+
+        ports:
+        - name: http
+          containerPort: {{ $.Values.modelService.service.targetPort }}
+          protocol: TCP
+
+        env:
+        - name: MODEL_VERSION
+          value: {{ $.Values.modelService.env.MODEL_VERSION | quote }}
+        - name: MODEL_BASE_URL
+          value: {{ $.Values.modelService.env.MODEL_BASE_URL | quote }}
+
+        livenessProbe:
+          tcpSocket:
+            port: http
+          initialDelaySeconds: 30
+          periodSeconds: 10
+
+        readinessProbe:
+          tcpSocket:
+            port: http
+          initialDelaySeconds: 10
+          periodSeconds: 5
+
+        resources:
+          {{- toYaml $.Values.modelService.resources | nindent 12 }}
+
+        volumeMounts:
+        - name: model-output
+          mountPath: {{ $.Values.modelService.volume.mountPath }}
+
+      volumes:
+      - name: model-output
+        {{- if $.Values.persistence.enabled }}
+        persistentVolumeClaim:
+          claimName: model-service-pvc
+        {{- else }}
+        emptyDir: {}
+        {{- end }}
+{{- end }}
+{{- else }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -18,6 +88,7 @@ spec:
         {{- include "doda-sms-app.selectorLabels" . | nindent 8 }}
         app.kubernetes.io/component: model-service
     spec:
+{{- end }}
       containers:
       - name: {{ .Values.modelService.name }}
         image: "{{ .Values.modelService.image.repository }}:{{ .Values.modelService.image.tag }}"

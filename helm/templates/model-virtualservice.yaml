@@ -1,0 +1,40 @@
+{{- if .Values.istio.enabled }}
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: {{ include "doda-sms-app.fullname" . }}-model
+  labels:
+    {{- include "doda-sms-app.labels" . | nindent 4 }}
+    app.kubernetes.io/component: model-service
+spec:
+  hosts:
+  - {{ include "doda-sms-app.fullname" . }}-model
+  http:
+  # ensure app-v1 talks to model-v1 and app-v2 talks to model-v2
+  - match:
+    - headers:
+        x-app-version:
+          exact: "v2"
+    route:
+    - destination:
+        host: {{ include "doda-sms-app.fullname" . }}-model
+        subset: v2
+  - match:
+    - headers:
+        x-app-version:
+          exact: "v1"
+    route:
+    - destination:
+        host: {{ include "doda-sms-app.fullname" . }}-model
+        subset: v1
+  # default route
+  - route:
+    - destination:
+        host: {{ include "doda-sms-app.fullname" . }}-model
+        subset: v1
+      weight: {{ .Values.istio.trafficSplit.stable | default 90 }}
+    - destination:
+        host: {{ include "doda-sms-app.fullname" . }}-model
+        subset: v2
+      weight: {{ .Values.istio.trafficSplit.experiment | default 10 }}
+{{- end }}
