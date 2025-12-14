@@ -29,7 +29,10 @@ I was responsible for steps 18, 19, and 20. I made a small addition to the node.
 - Ion: https://github.com/doda25-team1/operation/pull/9
 I worked on setting up kubernetes on the controller VM and making sure the .kube config file is accessible on both the ctrl and the host machine.
 
-- Alex: I worked on the Step 1-3 and Step 8, defined the Vagrant file. Set up the Ansible provisioner in it and managed etc/hosts dynamically via Jinja.
+- Alex: I don't have the PR. See commits below. I worked on the Step 1-3 and Step 8, defined the Vagrant file. Set up the Ansible provisioner in it and managed etc/hosts dynamically via Jinja.
+Step 1&2: https://github.com/doda25-team1/operation/commit/1dbde8d6d031568011c642070f44b4d838d8598a
+Step 3: https://github.com/doda25-team1/operation/commit/5eb4e59f25b4087bd21a6624ea2de46106c5df63
+Step 8: https://github.com/doda25-team1/operation/commit/ed5fe512027dd012ec72b63b5ec9d65125df193c
 
 - Nicolas: https://github.com/doda25-team1/operation/pull/8
     Steps 8-11. I worked on implementing the Kubernetes cluster setup using the Ansible playbooks. Configured the containerd as the container runtime and starting kublet.
@@ -55,6 +58,7 @@ I worked on fixing some of the files from a2 and for a3. Mostly I focuesd on pro
 - Daniel: no work. (compensated using week 2)
 
 ### Week Q2.5 (Dec 8-14)
+- Alex: https://github.com/doda25-team1/operation/pull/20 Setup the ingress gateway, parametrized ingress name, and configured service port.
 
 - Daniel: https://github.com/doda25-team1/operation/pull/19 I added the configuration for Prometheus such that it monitors the app service and it scrapes for metrics. Additionally, I set the alert manager.
 
