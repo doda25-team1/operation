@@ -66,6 +66,8 @@ I worked on fixing some of the files from a2 and for a3. Mostly I focuesd on pro
 https://github.com/doda25-team1/operation/pull/21 -> Added changes for shared volume to persist changes for all pods.
 Additionally, tested end to end till prometheus montoring on minikube cluster
 
+- Ion: https://github.com/doda25-team1/operation/pull/25 Worked with Istio to split traffic (90/10) between two app versions (v1 - normal and v2 - experiment). Made use of sticky sessions with consistent hashing. Additionally, app 1 will address model v1 and app 2 will address model v2. Created a trivial testing script (run-test-from-host.sh).
+
 ### Week Q2.6 (Dec 15–21)
 
 ### Week Q2.7 (Jan 5–11)
