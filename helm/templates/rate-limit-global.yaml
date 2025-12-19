@@ -1,0 +1,44 @@
+{{- if .Values.istio.enabled }}
+apiVersion: networking.istio.io/v1alpha3
+kind: EnvoyFilter
+metadata:
+  name: {{ include "doda-sms-app.fullname" . }}-rate-limit
+  namespace: {{ .Values.istio.gateway.namespace}}
+  labels:
+    {{- include "doda-sms-app.labels" . | nindent 4 }}
+spec:
+  workloadSelector:
+    labels: 
+      {{- toYaml .Values.istio.gateway.selector | nindent 6 }}
+  configPatches:
+    - applyTo: HTTP_FILTER
+      match:
+        context: GATEWAY
+        listener:
+          filterChain:
+            filter:
+              name: envoy.filters.network.http_connection_manager
+              subFilter:
+                name: envoy.filters.http.router
+      patch:
+        operation: INSERT_BEFORE
+        value:
+          name: envoy.filters.http.local_ratelimit
+          typed_config:
+            '@type': type.googleapis.com/udpa.type.v1.TypedStruct
+            type_url: type.googleapis.com/envoy.extensions.filters.http.local_ratelimit.v3.LocalRateLimit
+            value:
+              stat_prefix: http_local_rate_limiter
+              token_bucket:
+                max_tokens: {{ .Values.istio.rateLimit.maxTokens | default 10 }}
+                tokens_per_fill: {{ .Values.istio.rateLimit.tokensPerFill | default 10 }}
+                fill_interval: {{ .Values.istio.rateLimit.fillInterval | default "60s" }}
+              filter_enabled:
+                default_value:
+                  numerator: 100
+                  denominator: HUNDRED
+              filter_enforced:
+                default_value:
+                  numerator: 100
+                  denominator: HUNDRED
+{{- end }}
