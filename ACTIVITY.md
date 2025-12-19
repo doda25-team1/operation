@@ -62,7 +62,9 @@ I worked on fixing some of the files from a2 and for a3. Mostly I focuesd on pro
 ### Week Q2.5 (Dec 8-14)
 - Alex: https://github.com/doda25-team1/operation/pull/20 Setup the ingress gateway, parametrized ingress name, and configured service port.
 
-- Daniel: https://github.com/doda25-team1/operation/pull/19 I added the configuration for Prometheus such that it monitors the app service and it scrapes for metrics. Additionally, I set the alert manager.
+- Daniel: 
+    - https://github.com/doda25-team1/operation/pull/19 I added the configuration for Prometheus such that it monitors the app service and it scrapes for metrics. Additionally, I set the alert manager.
+    - https://github.com/doda25-team1/operation/pull/26 and https://github.com/doda25-team1/app/pull/10 I added the required implementation for the continuous experimentation, as well as documented the approach in the corresponding files.
 
 - Deon: https://github.com/doda25-team1/operation/pull/18 -> Implemented ServiceMonitor for monitoring deployments. 
 https://github.com/doda25-team1/operation/pull/21 -> Added changes for shared volume to persist changes for all pods.
@@ -73,7 +75,9 @@ Additionally, tested end to end till prometheus montoring on minikube cluster
 - Nicolas: https://github.com/doda25-team1/operation/pull/22 - Added the basic graphana setup. Waiting for further work from rest of the group in order to finalyze.
 
 ### Week Q2.6 (Dec 15–21)
-- Deon:https://github.com/doda25-team1/operation/pull/27 -> Added rate limit use case to handle cses for more that 10 requests per minute.
+- Deon:https://github.com/doda25-team1/operation/pull/27 -> Added rate limit use case to handle cses for more than 10 requests per minute.
+
+- Daniel: https://github.com/doda25-team1/operation/pull/29 I fixed some mistakes in the operation README and I also made the Vagrant file more robust by tightening the scopes for the playbook definitions. Lastly, I extracted some common variables to make adjustments easier.
 
 ### Week Q2.7 (Jan 5–11)
 
