@@ -197,3 +197,9 @@ istio:
       protocol: HTTP
     # Host to match in VirtualService
     host: "*" # Accept all hosts, or specify like "sms-app.example.com"
+
+  rateLimit:
+    enabled: true
+    maxTokens: 10
+    tokensPerFill: 10
+    fillInterval: 60s
