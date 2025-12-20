@@ -73,6 +73,7 @@ Additionally, tested end to end till prometheus montoring on minikube cluster
 - Nicolas: https://github.com/doda25-team1/operation/pull/22 - Added the basic graphana setup. Waiting for further work from rest of the group in order to finalyze.
 
 ### Week Q2.6 (Dec 15–21)
+- Deon:https://github.com/doda25-team1/operation/pull/27 -> Added rate limit use case to handle cses for more that 10 requests per minute.
 
 ### Week Q2.7 (Jan 5–11)
 
