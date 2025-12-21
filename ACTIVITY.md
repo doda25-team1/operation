@@ -79,6 +79,11 @@ Additionally, tested end to end till prometheus montoring on minikube cluster
 
 - Daniel: https://github.com/doda25-team1/operation/pull/29 I fixed some mistakes in the operation README and I also made the Vagrant file more robust by tightening the scopes for the playbook definitions. Lastly, I extracted some common variables to make adjustments easier.
 
+- Ion: This week I focused on implementing proper health endpoints.
+    - https://github.com/doda25-team1/operation/pull/31 (Update Kubernetes probes to uses dedicated health endpoints.)
+    - https://github.com/doda25-team1/model-service/pull/9 (Added dedicated health endpoints for Kubernetes probes.)
+    - https://github.com/doda25-team1/app/pull/11 (Added dedicated health endpoints for Kubernetes probes.)
+
 ### Week Q2.7 (Jan 5–11)
 
 ### Week Q2.8 (Jan 12–18)
