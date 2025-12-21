@@ -74,7 +74,9 @@ Additionally, tested end to end till prometheus montoring on minikube cluster
 ### Week Q2.6 (Dec 15–21)
 - Deon:https://github.com/doda25-team1/operation/pull/27 -> Added rate limit use case to handle cses for more than 10 requests per minute.
 
-- Daniel: https://github.com/doda25-team1/operation/pull/29 I fixed some mistakes in the operation README and I also made the Vagrant file more robust by tightening the scopes for the playbook definitions. Lastly, I extracted some common variables to make adjustments easier.
+- Daniel:
+    - https://github.com/doda25-team1/operation/pull/29 I fixed some mistakes in the operation README and I also made the Vagrant file more robust by tightening the scopes for the playbook definitions. Lastly, I extracted some common variables to make adjustments easier.
+    - https://github.com/doda25-team1/app/pull/12 I went back to check the versioning for the app repo. It seems that when we build the artifacts they don't utilize the version inside the workflow.
 
 ### Week Q2.7 (Jan 5–11)
 
