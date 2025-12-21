@@ -6,9 +6,9 @@ This repository contains the deployment files for the SMS Spam Checker applicati
 
 The SMS Spam Checker consists of two main services and a shared library:
 
-- [**app-service** ](../app): Spring Boot frontend application that serves the web UI and acts as an API gateway.
-- [**model-service**](../model_service): Python Flask backend that provides ML-based spam detection.
-- [**lib-version**](../lib-version): Shared Java library that exposes the packaged version at runtime (used by the app-service).
+- [**app-service** ](https://github.com/doda25-team1/app): Spring Boot frontend application that serves the web UI and acts as an API gateway.
+- [**model-service**](https://github.com/doda25-team1/model-service): Python Flask backend that provides ML-based spam detection.
+- [**lib-version**](https://github.com/doda25-team1/lib-version): Shared Java library that exposes the packaged version at runtime (used by the app-service).
 
 ## Requirements
 
@@ -29,7 +29,7 @@ Copy the `.env.example` file and change its name to `.env`. You can adjust confi
 
 #### Step 2: Train the Model (Required)
 
-Follow the steps described in the `../model_service/README.md`. This is the model which will be used when you run docker-compose.
+Follow the steps described in the `../model-service/README.md`. This is the model which will be used when you run docker-compose.
 You will need to have both repositories setup.
 
 #### Step 3: Build Images (Optional)
@@ -39,7 +39,7 @@ You can build the images on your own using these commands:
 cd ../app
 docker build -t ghcr.io/doda25-team1/app:latest .
 
-cd ../model_service
+cd ../model-service
 docker build -t ghcr.io/doda25-team1/model-service:latest .
 ```
 
@@ -109,7 +109,7 @@ docker push ghcr.io/doda25-team1/app:latest
 
 3. **Build and push backend image:**
 ```bash
-cd ../model_service
+cd ../model-service
 docker build -t ghcr.io/doda25-team1/model-service:latest .
 docker push ghcr.io/doda25-team1/model-service:latest
 ```
