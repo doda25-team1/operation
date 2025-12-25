@@ -34,12 +34,9 @@ Step 1&2: https://github.com/doda25-team1/operation/commit/1dbde8d6d031568011c64
 Step 3: https://github.com/doda25-team1/operation/commit/5eb4e59f25b4087bd21a6624ea2de46106c5df63
 Step 8: https://github.com/doda25-team1/operation/commit/ed5fe512027dd012ec72b63b5ec9d65125df193c
 
-- Nicolas: https://github.com/doda25-team1/operation/pull/8
-    Steps 8-11. I worked on implementing the Kubernetes cluster setup using the Ansible playbooks. Configured the containerd as the container runtime and starting kublet.
+- Noah: I worked on steps 21-23 of A2, and was trying to test the vagrant setup, but this was tough using WSL.
 
 - Nicolas: https://github.com/doda25-team1/operation/pull/8 - This pull request can be ignored due to a mistake i commited the wrong branch. This did not affect my coleagues work directly but delayed my own having to remove this pull and re-create my assignment 3 graphana part.
-
-- Noah: I worked on steps 21-23 of A2, and was trying to test the vagrant setup, but this was tough using WSL.
 
 ### Week Q2.4 (Dec 1-7)
 
