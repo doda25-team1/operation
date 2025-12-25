@@ -41,8 +41,6 @@ Step 8: https://github.com/doda25-team1/operation/commit/ed5fe512027dd012ec72b63
 
 - Noah: I worked on steps 21-23 of A2, and was trying to test the vagrant setup, but this was tough using WSL.
 
-- Noah: I worked on steps 21-23 of A2, and was trying to test the vagrant setup, but this was tough using WSL.
-
 ### Week Q2.4 (Dec 1-7)
 
 - Alex: https://github.com/doda25-team1/operation/pull/11
