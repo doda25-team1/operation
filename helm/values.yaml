@@ -139,6 +139,36 @@ monitoring:
       for: 2m
       severity: warning
 
+  grafana:
+    enabled: true
+    replicaCount: 1
+
+    image:
+      repository: grafana/grafana
+      tag: "10.2.0"
+      pullPolicy: IfNotPresent
+
+    service:
+      type: ClusterIP
+      port: 3000
+
+    adminPassword: adminPassword
+
+    datasources:
+      enabled: true
+      prometheusUrl: "http://{{ .Release.Name }}-doda-sms-app-prometheus:9090"
+
+    dashboards:
+      enabled: true
+
+    resources:
+      limits:
+        cpu: 200m
+        memory: 256Mi
+      requests:
+        cpu: 100m
+        memory: 128Mi
+
 # Istio Service Mesh Configuration
 istio:
   enabled: true # enable/disable Istio resources (Istio is installed during cluster provisioning)

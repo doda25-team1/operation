@@ -43,6 +43,9 @@ Step 8: https://github.com/doda25-team1/operation/commit/ed5fe512027dd012ec72b63
 - Alex: https://github.com/doda25-team1/operation/pull/11
 Worked on deployment and service manifests, created ingress, and implemented values.yaml to allow changing hostnames and URLs.
 
+- Nicolas: https://github.com/doda25-team1/operation/pull/13
+    Steps 19-20. I worked on installing the Nginx Ingress Controller and Kubernetes Dashboard using Ansible playbooks. Configured MetalLB integration with a LoadBalancer IP for the ingress controller, set up the dashboard with an admin-user ServiceAccount and ClusterRoleBinding, and created an ingress route to expose the dashboard at dashboard.local. Modified finalization.yml (97 lines) and Vagrantfile to add the finalization playbook provisioning.
+
 - Noah: https://github.com/doda25-team1/operation/pull/12
 I worked on finalising the last few steps i was working on from last week. I was not able to start with A3 as I was tasked to finalise that task too.
 
@@ -52,9 +55,6 @@ I worked on fixing some of the files from a2 and for a3. Mostly I focuesd on pro
 - Deon https://github.com/doda25-team1/operation/pull/16. Worked on the implementation for deployment and configuration of model service but couldnt test it properly last week due to laptop issues. Tested the changes this week.
 
 - Daniel: no work. (compensated using week 2)
-
-- Nicolas: https://github.com/doda25-team1/operation/pull/13
-    Steps 19-20. I worked on installing the Ingress Controller and Kubernetes Dashboard, configured LoadBalancer in finalization.yml
 
 ### Week Q2.5 (Dec 8-14)
 - Alex: https://github.com/doda25-team1/operation/pull/20 Setup the ingress gateway, parametrized ingress name, and configured service port.
