@@ -84,6 +84,9 @@ Additionally, tested end to end till prometheus montoring on minikube cluster
     - https://github.com/doda25-team1/app/pull/11 (Added dedicated health endpoints for Kubernetes probes.)
 
 ### Week Q2.7 (Jan 5–11)
+- Deon: https://github.com/doda25-team1/operation/pull/33 -> Changed global limit to user level global limit for istio.
+https://github.com/doda25-team1/operation/pull/34/files -> Did some modifications to make the grafana pod running
+
 
 ### Week Q2.8 (Jan 12–18)
 
