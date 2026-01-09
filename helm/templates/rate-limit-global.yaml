@@ -1,15 +1,13 @@
-{{- if .Values.istio.enabled }}
+{{- if and .Values.istio.enabled .Values.istio.rateLimit.enabled }}
 apiVersion: networking.istio.io/v1alpha3
 kind: EnvoyFilter
 metadata:
-  name: {{ include "doda-sms-app.fullname" . }}-rate-limit
-  namespace: {{ .Values.istio.gateway.namespace}}
-  labels:
-    {{- include "doda-sms-app.labels" . | nindent 4 }}
+  name: {{ include "doda-sms-app.fullname" . }}-filter-ratelimit
+  namespace: {{ .Values.istio.gateway.namespace }}
 spec:
   workloadSelector:
-    labels: 
-      {{- toYaml .Values.istio.gateway.selector | nindent 6 }}
+    labels:
+      {{toYaml .Values.istio.gateway.selector | nindent 6 }}
   configPatches:
     - applyTo: HTTP_FILTER
       match:
@@ -17,28 +15,35 @@ spec:
         listener:
           filterChain:
             filter:
-              name: envoy.filters.network.http_connection_manager
+              name: "envoy.filters.network.http_connection_manager"
               subFilter:
-                name: envoy.filters.http.router
+                name: "envoy.filters.http.router"
       patch:
         operation: INSERT_BEFORE
         value:
-          name: envoy.filters.http.local_ratelimit
+          name: envoy.filters.http.ratelimit
           typed_config:
-            '@type': type.googleapis.com/udpa.type.v1.TypedStruct
-            type_url: type.googleapis.com/envoy.extensions.filters.http.local_ratelimit.v3.LocalRateLimit
-            value:
-              stat_prefix: http_local_rate_limiter
-              token_bucket:
-                max_tokens: {{ .Values.istio.rateLimit.maxTokens | default 10 }}
-                tokens_per_fill: {{ .Values.istio.rateLimit.tokensPerFill | default 10 }}
-                fill_interval: {{ .Values.istio.rateLimit.fillInterval | default "60s" }}
-              filter_enabled:
-                default_value:
-                  numerator: 100
-                  denominator: HUNDRED
-              filter_enforced:
-                default_value:
-                  numerator: 100
-                  denominator: HUNDRED
+            "@type": type.googleapis.com/envoy.extensions.filters.http.ratelimit.v3.RateLimit
+            domain: ratelimit
+            failure_mode_deny: true
+            timeout: 10s
+            rate_limit_service:
+              grpc_service:
+                envoy_grpc:
+                  cluster_name: outbound|8081||{{ include "doda-sms-app.fullname" . }}-ratelimit.{{ .Values.istio.gateway.namespace }}.svc.cluster.local
+                  authority: {{ include "doda-sms-app.fullname" . }}-ratelimit.{{ .Values.istio.gateway.namespace }}.svc.cluster.local
+              transport_api_version: V3
+              
+    - applyTo: HTTP_ROUTE
+      match:
+        context: GATEWAY
+      patch:
+        operation: MERGE
+        value:
+          route:
+            rate_limits:
+              - actions:
+                  - request_headers:
+                      header_name: "x-user-id"
+                      descriptor_key: "user"
 {{- end }}
