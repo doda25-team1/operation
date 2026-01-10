@@ -15,7 +15,7 @@ app:
     type: ClusterIP # only accessible within the cluster
     port: 8080 # port other services talk to
     targetPort: 8080 # port app listens to
-    portName: http-web # port name for istio
+    portName: http # port name for istio
   
   # Resource limitations
   resources:
@@ -201,6 +201,3 @@ istio:
 
   rateLimit:
     enabled: true
-    maxTokens: 10
-    tokensPerFill: 10
-    fillInterval: 60s
