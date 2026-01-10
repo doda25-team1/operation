@@ -1,0 +1,28 @@
+{{- if .Values.monitoring.grafana.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "doda-sms-app.fullname" . }}-grafana-dashboards
+  labels:
+    {{- include "doda-sms-app.labels" . | nindent 4 }}
+    app.kubernetes.io/component: grafana
+data:
+  # This key becomes the filename inside the pod
+  simple-dashboard.json: |
+    {
+      "id": null,
+      "title": "Initial Dashboard",
+      "tags": [ "templated" ],
+      "timezone": "browser",
+      "schemaVersion": 16,
+      "version": 0,
+      "panels": [
+        {
+          "type": "text",
+          "title": "Welcome",
+          "gridPos": { "x": 0, "y": 0, "w": 12, "h": 5 },
+          "content": "# Success!\n\nYour Grafana is running. You can now edit this dashboard or import new ones."
+        }
+      ]
+    }
+{{- end }}

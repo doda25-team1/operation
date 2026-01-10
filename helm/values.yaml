@@ -93,7 +93,7 @@ persistence:
   storageClass: manual
 
 monitoring:
-  enabled: false  # Disabled - Prometheus Operator CRDs not installed
+  enabled: true  # Disabled - Prometheus Operator CRDs not installed
 
   prometheus:
     enabled: true
@@ -156,7 +156,6 @@ monitoring:
 
     datasources:
       enabled: true
-      prometheusUrl: "http://{{ .Release.Name }}-doda-sms-app-prometheus:9090"
 
     dashboards:
       enabled: true

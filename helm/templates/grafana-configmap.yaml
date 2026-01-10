@@ -24,7 +24,7 @@ data:
       - name: Prometheus
         type: prometheus
         access: proxy
-        url: {{ .Values.monitoring.grafana.datasources.prometheusUrl }}
+        url: http://{{ include "doda-sms-app.fullname" . }}-prometheus:9090
         isDefault: true
         editable: false
   {{- end }}
