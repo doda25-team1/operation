@@ -87,6 +87,10 @@ Additionally, tested end to end till prometheus montoring on minikube cluster
 - Deon: https://github.com/doda25-team1/operation/pull/33 -> Changed global limit to user level global limit for istio.
 https://github.com/doda25-team1/operation/pull/34/files -> Did some modifications to make the grafana pod running
 
+- Daniel:
+    - https://github.com/doda25-team1/model-service/pull/10 - I fixed the model-service workflow to set the version of the artifact equal to the release version. 
+    - https://github.com/doda25-team1/operation/pull/36 - I adjusted to operation documentation to allow offline browsing, and I fixed the docker-compose volume mount for model-service.
+
 
 ### Week Q2.8 (Jan 12–18)
 
