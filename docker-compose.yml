@@ -7,7 +7,7 @@ services:
       - MODEL_VERSION=${MODEL_VERSION}
       - MODEL_BASE_URL=${MODEL_BASE_URL}
     volumes:
-      - ../model_service/output:/app/output
+      - ../model-service/output:/app/output
     restart: unless-stopped
     networks:
       - sms-network
