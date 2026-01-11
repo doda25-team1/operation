@@ -24,7 +24,7 @@ data:
       - name: Prometheus
         type: prometheus
         access: proxy
-        url: {{ .Values.monitoring.grafana.datasources.prometheusUrl }}
+        url: {{ tpl .Values.monitoring.grafana.datasources.prometheusUrl . }}
         isDefault: true
         editable: false
   {{- end }}
