@@ -6,9 +6,9 @@ This repository contains the deployment files for the SMS Spam Checker applicati
 
 The SMS Spam Checker consists of two main services and a shared library:
 
-- [**app-service** ](https://github.com/doda25-team1/app): Spring Boot frontend application that serves the web UI and acts as an API gateway.
-- [**model-service**](https://github.com/doda25-team1/model-service): Python Flask backend that provides ML-based spam detection.
-- [**lib-version**](https://github.com/doda25-team1/lib-version): Shared Java library that exposes the packaged version at runtime (used by the app-service).
+- [**app-service** ](../app): Spring Boot frontend application that serves the web UI and acts as an API gateway.
+- [**model-service**](../model-service): Python Flask backend that provides ML-based spam detection.
+- [**lib-version**](../lib-version): Shared Java library that exposes the packaged version at runtime (used by the app-service).
 
 ## Requirements
 
