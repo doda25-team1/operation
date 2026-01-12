@@ -2,7 +2,7 @@
 app:
   name: sms-app
   version: v1
-  replicaCount: 2
+  replicaCount: 1
   
   # Docker image settings
   image:
