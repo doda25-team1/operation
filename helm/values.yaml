@@ -84,7 +84,7 @@ modelService:
       memory: 256Mi
 
 persistence:
-  enabled: false  # Disabled for testing - /mnt/shared doesn't exist on nodes
+  enabled: true  # Disabled for testing - /mnt/shared doesn't exist on nodes
   storageType: hostPath
   hostPath:
     path: /mnt/shared
@@ -93,7 +93,7 @@ persistence:
   storageClass: manual
 
 monitoring:
-  enabled: false  # Disabled - Prometheus Operator CRDs not installed
+  enabled: true  # Disabled - Prometheus Operator CRDs not installed
 
   prometheus:
     enabled: true
@@ -119,16 +119,16 @@ monitoring:
       type: ClusterIP
       port: 9093
     config:
-      receiver: default
+      receiver: email
       webhookUrl: ""
     email:
-      enabled: false
+      enabled: true
       receiver: email
-      to: you@example.com
-      from: alerts@example.com
-      smarthost: smtp.example.com:587
+      to: deonsaji10@gmail.com
+      from: deonsaji10@gmail.com
+      smarthost: smtp.gmail.com:587
       requireTls: true
-      username: alerts@example.com
+      username: deonsaji10@gmail.com
       password: "" # set via Helm value; stored in a Secret and mounted into Alertmanager
     resources: {}
 
@@ -171,7 +171,7 @@ monitoring:
 
 # Istio Service Mesh Configuration
 istio:
-  enabled: true # enable/disable Istio resources (Istio is installed during cluster provisioning)
+  enabled: false # enable/disable Istio resources (Istio is installed during cluster provisioning)
 
   # Traffic split configuration for canary releases
   trafficSplit:
@@ -201,3 +201,23 @@ istio:
 
   rateLimit:
     enabled: true
+
+kube-prometheus-stack:
+  prometheusOperator:
+    admissionWebhooks:
+      patch:
+        podAnnotations:
+          sidecar.istio.io/inject: "false"
+
+  crds:
+    enabled: true
+
+  alertmanager:
+    enabled: false
+  grafana:
+    enabled: false
+  prometheus:
+    enabled: false
+  
+  defaultRules:
+    create: false

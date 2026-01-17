@@ -4,8 +4,8 @@ kind: ServiceMonitor
 metadata:
   name: {{ include "doda-sms-app.fullname" . }}-monitor
   labels:
-    release: {{ .Values.app.prometheus.releaseLabel }}
     {{- include "doda-sms-app.labels" . | nindent 4 }}
+    release: {{ .Values.app.prometheus.releaseLabel }}
 spec:
   selector:
     matchLabels:
