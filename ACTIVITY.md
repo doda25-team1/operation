@@ -99,6 +99,10 @@ https://github.com/doda25-team1/operation/pull/34/files -> Did some modification
 ### Week Q2.8 (Jan 12–18)
 - Deon : https://github.com/doda25-team1/operation/pull/40 -> Added fixed ip for istio and self signed certificate for a2. Added prometheus crd install setup and working cluster using central helm chart
 
+- Daniel:
+    - https://github.com/doda25-team1/app/pull/13 - I improved logging for the app backend service by introducing logging in favour of print statements.
+    - https://github.com/doda25-team1/operation/pull/42 - I made small fixes and adjustments to the new documentation of the operation repository.
+
 ### Week Q2.9 (Jan 19–25)
 
 ### Week Q2.10 (Jan 26–27) (final submission!)
