@@ -97,6 +97,7 @@ https://github.com/doda25-team1/operation/pull/34/files -> Did some modification
 
 
 ### Week Q2.8 (Jan 12–18)
+- Deon : https://github.com/doda25-team1/operation/pull/40 -> Added fixed ip for istio and self signed certificate for a2. Added prometheus crd install setup and working cluster using central helm chart
 
 ### Week Q2.9 (Jan 19–25)
 
