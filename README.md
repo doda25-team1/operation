@@ -57,9 +57,9 @@ The SMS Spam Checker consists of three main components:
 
 | Component | Description |
 |-----------|-------------|
-| [**app-service**](https://github.com/doda25-team1/app) | Frontend application serving web UI and REST API gateway |
-| [**model-service**](https://github.com/doda25-team1/model-service) | ML backend providing spam detection predictions |
-| [**lib-version**](https://github.com/doda25-team1/lib-version) | Shared utility exposing package version at runtime |
+| [**app-service**](../app) | Frontend application serving web UI and REST API gateway |
+| [**model-service**](../model-service) | ML backend providing spam detection predictions |
+| [**lib-version**](../lib-version) | Shared utility exposing package version at runtime |
 
 ---
 
