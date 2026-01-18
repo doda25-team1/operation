@@ -195,7 +195,8 @@ vagrant up
 ```
 
 This runs the Ansible playbooks to:
-- Install Docker, kubeadm, kubelet, kubectl
+- Install containerd + runc as the runtime and kubeadm/kubelet/kubectl (v1.32.4)
+- Configure kubelet node IPs via /etc/default/kubelet to bind to eth1
 - Initialize the Kubernetes cluster on `ctrl`
 - Join worker nodes to the cluster
 - Install Flannel CNI for pod networking
@@ -217,8 +218,9 @@ node-2   Ready                    3m    v1.32.x
 
 ### Step 3: Finalize Cluster Setup
 
-Run the finalization playbook from your host machine:
+Run the finalization playbook from your host machine (after `vagrant up`, using the Vagrant-provided SSH key/port-forward in `inventory_portforward.ini`):
 ```bash
+cd operation
 ansible-playbook -i inventory_portforward.ini playbooks/finalization.yml
 ```
 
@@ -279,8 +281,8 @@ Istio provides advanced traffic management, security, and observability.
 
 1. Request hits **Istio Ingress Gateway** (192.168.56.95:80)
 2. **VirtualService** routes based on rules:
-   - 90% → v1 (stable)
-   - 10% → v2 (experiment)
+   - 90% -> v1 (stable)
+   - 10% -> v2 (experiment)
 3. **DestinationRule** applies load balancing
 4. App-service calls model-service internally
 
@@ -449,7 +451,7 @@ kubectl rollout restart deployment sms-model-service
 
 3. **Build and push model-service:**
    ```bash
-   cd ../model_service
+   cd ../model-service
    docker build -t ghcr.io/doda25-team1/model-service:latest .
    docker push ghcr.io/doda25-team1/model-service:latest
    ```
