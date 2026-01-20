@@ -102,7 +102,11 @@ https://github.com/doda25-team1/operation/pull/34/files -> Did some modification
 - Daniel:
     - https://github.com/doda25-team1/app/pull/13 - I improved logging for the app backend service by introducing logging in favour of print statements.
     - https://github.com/doda25-team1/operation/pull/42 - I made small fixes and adjustments to the new documentation of the operation repository.
+    -Nicolas:
+    - https://github.com/doda25-team1/operation/pull/37 - Added the graphana dashboards and setup the dashboards auto-provisioning via helm. Implemented the config0map mounting as volumes
+
 
 ### Week Q2.9 (Jan 19–25)
+
 
 ### Week Q2.10 (Jan 26–27) (final submission!)
