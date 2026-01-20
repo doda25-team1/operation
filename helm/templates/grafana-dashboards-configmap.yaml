@@ -1,0 +1,14 @@
+{{- if and .Values.monitoring.grafana.enabled .Values.monitoring.grafana.dashboards.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "doda-sms-app.fullname" . }}-grafana-dashboards
+  labels:
+    {{- include "doda-sms-app.labels" . | nindent 4 }}
+    app.kubernetes.io/component: grafana
+data:
+  dashboard-main.json: |-
+{{ .Files.Get "dashboards/dashboard-main.json" | indent 4 }}
+  dashboard-experiment.json: |-
+{{ .Files.Get "dashboards/dashboard-experiment.json" | indent 4 }}
+{{- end }}

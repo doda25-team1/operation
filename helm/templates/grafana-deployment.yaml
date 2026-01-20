@@ -33,7 +33,7 @@ spec:
           value: /etc/grafana/provisioning
         volumeMounts:
         - name: grafana-config
-          mountPath: /etc/grafana
+          mountPath: /etc/grafana/grafana.ini
           subPath: grafana.ini
         - name: grafana-datasources
           mountPath: /etc/grafana/provisioning/datasources
