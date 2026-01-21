@@ -72,8 +72,6 @@ Additionally, tested end to end till prometheus montoring on minikube cluster
 - Nicolas: https://github.com/doda25-team1/operation/pull/22 - Added the basic graphana setup. Waiting for further work from rest of the group in order to finalyze.
 
 ### Week Q2.6 (Dec 15–21)
-- Alex: https://github.com/doda25-team1/operation/pull/39 Updated documentation with a details about strcutre, architecture, components, quick start, kubernetes deployment, istio service mesh, monitoring and using dashboards, configurations
-
 - Deon:https://github.com/doda25-team1/operation/pull/27 -> Added rate limit use case to handle cses for more than 10 requests per minute.
 
 - Daniel:
@@ -86,8 +84,6 @@ Additionally, tested end to end till prometheus montoring on minikube cluster
     - https://github.com/doda25-team1/app/pull/11 (Added dedicated health endpoints for Kubernetes probes.)
 
 ### Week Q2.7 (Jan 5–11)
-- Alex: https://github.com/doda25-team1/model-service/pull/11 Added logging to predict, health and ready endpoints for backend.
-
 - Deon: https://github.com/doda25-team1/operation/pull/33 -> Changed global limit to user level global limit for istio.
 https://github.com/doda25-team1/operation/pull/34/files -> Did some modifications to make the grafana pod running
 
@@ -97,6 +93,10 @@ https://github.com/doda25-team1/operation/pull/34/files -> Did some modification
 
 
 ### Week Q2.8 (Jan 12–18)
+- Alex: https://github.com/doda25-team1/operation/pull/39 Updated documentation with a details about strcutre, architecture, components, quick start, kubernetes deployment, istio service mesh, monitoring and using dashboards, configurations
+        https://github.com/doda25-team1/model-service/pull/11 Added logging to predict, health and ready endpoints for backend.
+
+
 - Deon : https://github.com/doda25-team1/operation/pull/40 -> Added fixed ip for istio and self signed certificate for a2. Added prometheus crd install setup and working cluster using central helm chart
 
 - Daniel:
@@ -104,5 +104,7 @@ https://github.com/doda25-team1/operation/pull/34/files -> Did some modification
     - https://github.com/doda25-team1/operation/pull/42 - I made small fixes and adjustments to the new documentation of the operation repository.
 
 ### Week Q2.9 (Jan 19–25)
+- Alex: https://github.com/doda25-team1/operation/pull/44 Added health checks to docker compose every 10s for frontend and backend
+        https://github.com/doda25-team1/model-service/pull/12 Handling of errors, returns 400 if empty request, no sms field, emtpy string or non string value. If something on server breaks return 500 with details.
 
 ### Week Q2.10 (Jan 26–27) (final submission!)
