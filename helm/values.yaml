@@ -84,7 +84,7 @@ modelService:
       memory: 256Mi
 
 persistence:
-  enabled: false  # Disabled for testing - /mnt/shared doesn't exist on nodes
+  enabled: true  # Disabled for testing - /mnt/shared doesn't exist on nodes
   storageType: hostPath
   hostPath:
     path: /mnt/shared
@@ -93,7 +93,7 @@ persistence:
   storageClass: manual
 
 monitoring:
-  enabled: false  # Disabled - Prometheus Operator CRDs not installed
+  enabled: true  # Disabled - Prometheus Operator CRDs not installed
 
   prometheus:
     enabled: true
