@@ -9,7 +9,7 @@ metadata:
 spec:
   hosts:
   {{- if .Values.istio.gateway.enabled }}
-  - "{{ .Values.istio.gateway.host | default "*" }}"
+  - "*"
   {{- else }}
   - {{ include "doda-sms-app.fullname" . }}-app
   {{- end }}
@@ -18,6 +18,15 @@ spec:
   - {{ include "doda-sms-app.fullname" . }}-gateway
   {{- end }}
   http:
+  - match:
+    - headers:
+        host:
+          exact: {{ .Values.istio.gateway.host.experimental | quote }}
+    route:
+    - destination:
+        host: {{ include "doda-sms-app.fullname" . }}-app
+        subset: v2
+
   - match:
     - headers:
         cookie:
