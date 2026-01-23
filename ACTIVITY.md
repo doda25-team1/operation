@@ -6,8 +6,7 @@ I worked on the F8 task of A1, implementing automated versioning and GitHub work
 - Nicolas: https://github.com/doda25-team1/model-service/pull/1
 I worked on creating the docker file, upgraded it to contain 2 stages, created PORT as an enviromental variable and allowed for multi-arhitecture compatibility. Therefore satisfying F3,F4 (for the model-service) and F5,F6.
 
-- Daniel: https://github.com/doda25-team1/app/pull/1, https://github.com/doda25-team1/lib-version/pull/7
-I made the Dockerfile for the app service, integrated the lib-version library, and made small adjustments to workflows, other configuration, and docs.
+- Daniel: https://github.com/doda25-team1/app/pull/1, https://github.com/doda25-team1/lib-version/pull/7 - [A1] I made the Dockerfile for the app service, integrated the lib-version library, and made small adjustments to workflows, other configuration, and docs.
 
 - Alex: https://github.com/doda25-team1/model-service/pull/2, https://github.com/doda25-team1/app/pull/2, https://github.com/doda25-team1/operation/pull/1
 I made the Dockefile compose and made sure the PORT numbers for both services are configurable and overwritten by compose.
@@ -23,8 +22,7 @@ I worked on creating the intial lib-version setup, and worked on feature branch 
 - Deon: https://github.com/doda25-team1/operation/pull/7
 I worked on the steps 4 to 7 of A2. I implemented secure SSH key-based access to all VMs by registering multiple team public keys using Ansible. Then disabled SWAP both immediately and permanently, ensuring Kubernetes compatibility by stopping active swap and removing it from /etc/fstab. Finally, configured Kubernetes networking at the kernel level by loading br_netfilter and overlay modules and enabling required sysctl parameters for IP forwarding and bridged traffic. Made some fixes to run initial vagrant setup
 
-- Daniel: https://github.com/doda25-team1/operation/pull/10
-I was responsible for steps 18, 19, and 20. I made a small addition to the node.yml so that worker nodes can get the command they need to run to join the cluster, and I also created the finalization.yml playbook, which configures the MetalLB loadbalancer on the controller node. I also added my public key to the repo.
+- Daniel: https://github.com/doda25-team1/operation/pull/10 - [A2] I was responsible for steps 18, 19, and 20. I made a small addition to the node.yml so that worker nodes can get the command they need to run to join the cluster, and I also created the finalization.yml playbook, which configures the MetalLB loadbalancer on the controller node. I also added my public key to the repo.
 
 - Ion: https://github.com/doda25-team1/operation/pull/9
 I worked on setting up kubernetes on the controller VM and making sure the .kube config file is accessible on both the ctrl and the host machine.
@@ -60,8 +58,8 @@ I worked on fixing some of the files from a2 and for a3. Mostly I focuesd on pro
 - Alex: https://github.com/doda25-team1/operation/pull/20 Setup the ingress gateway, parametrized ingress name, and configured service port.
 
 - Daniel: 
-    - https://github.com/doda25-team1/operation/pull/19 I added the configuration for Prometheus such that it monitors the app service and it scrapes for metrics. Additionally, I set the alert manager.
-    - https://github.com/doda25-team1/operation/pull/26 and https://github.com/doda25-team1/app/pull/10 I added the required implementation for the continuous experimentation, as well as documented the approach in the corresponding files.
+    - https://github.com/doda25-team1/operation/pull/19 - [A3] I added the configuration for Prometheus such that it monitors the app service and it scrapes for metrics. Additionally, I set the alert manager.
+    - https://github.com/doda25-team1/operation/pull/26 and https://github.com/doda25-team1/app/pull/10 - [A4] I added the required implementation for the continuous experimentation, as well as documented the approach in the corresponding files.
 
 - Deon: https://github.com/doda25-team1/operation/pull/18 -> Implemented ServiceMonitor for monitoring deployments. 
 https://github.com/doda25-team1/operation/pull/21 -> Added changes for shared volume to persist changes for all pods.
@@ -75,8 +73,8 @@ Additionally, tested end to end till prometheus montoring on minikube cluster
 - Deon:https://github.com/doda25-team1/operation/pull/27 -> Added rate limit use case to handle cses for more than 10 requests per minute.
 
 - Daniel:
-    - https://github.com/doda25-team1/operation/pull/29 I fixed some mistakes in the operation README and I also made the Vagrant file more robust by tightening the scopes for the playbook definitions. Lastly, I extracted some common variables to make adjustments easier.
-    - https://github.com/doda25-team1/app/pull/12 I went back to check the versioning for the app repo. It seems that when we build the artifacts they don't utilize the version inside the workflow.
+    - https://github.com/doda25-team1/operation/pull/29 - [A2] I fixed some mistakes in the operation README and I also made the Vagrant file more robust by tightening the scopes for the playbook definitions. Lastly, I extracted some common variables to make adjustments easier.
+    - https://github.com/doda25-team1/app/pull/12 - [A1] I went back to check the versioning for the app repo. It seems that when we build the artifacts they don't utilize the version inside the workflow.
 
 - Ion: This week I focused on implementing proper health endpoints.
     - https://github.com/doda25-team1/operation/pull/31 (Update Kubernetes probes to uses dedicated health endpoints.)
@@ -88,8 +86,8 @@ Additionally, tested end to end till prometheus montoring on minikube cluster
 https://github.com/doda25-team1/operation/pull/34/files -> Did some modifications to make the grafana pod running
 
 - Daniel:
-    - https://github.com/doda25-team1/model-service/pull/10 - I fixed the model-service workflow to set the version of the artifact equal to the release version. 
-    - https://github.com/doda25-team1/operation/pull/36 - I adjusted to operation documentation to allow offline browsing, and I fixed the docker-compose volume mount for model-service.
+    - https://github.com/doda25-team1/model-service/pull/10 - [A1] I fixed the model-service workflow to set the version of the artifact equal to the release version. 
+    - https://github.com/doda25-team1/operation/pull/36 - [A1] I adjusted to operation documentation to allow offline browsing, and I fixed the docker-compose volume mount for model-service.
 
 
 ### Week Q2.8 (Jan 12–18)
@@ -106,5 +104,9 @@ https://github.com/doda25-team1/operation/pull/34/files -> Did some modification
 ### Week Q2.9 (Jan 19–25)
 - Alex: https://github.com/doda25-team1/operation/pull/44 Added health checks to docker compose every 10s for frontend and backend
         https://github.com/doda25-team1/model-service/pull/12 Handling of errors, returns 400 if empty request, no sms field, emtpy string or non string value. If something on server breaks return 500 with details.
+
+- Daniel:
+    - https://github.com/doda25-team1/app/pull/15 - [A1] I made the final adjustment to the app workflow, which required a step to sync with the default branch after the previous release, since the automated commit commit was missing and it prevented a fast-forward. 
+    - https://github.com/doda25-team1/model-service/pull/13 - [A1] Same fix for the model-service as the app workflow.
 
 ### Week Q2.10 (Jan 26–27) (final submission!)
