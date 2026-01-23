@@ -38,6 +38,8 @@ spec:
         env:
         - name: MODEL_HOST
           value: "http://{{ include "doda-sms-app.fullname" $ }}-model:{{ $.Values.modelService.service.port }}"
+        - name: APP_VERSION
+          value: {{ $version | quote }}
         {{- if $.Values.app.config.enabled }}
         - name: APP_CONFIG_VALUE
           valueFrom:
@@ -92,7 +94,6 @@ spec:
         {{- include "doda-sms-app.selectorLabels" . | nindent 8 }}
         app.kubernetes.io/component: app
     spec:
-{{- end }}
       containers:
       - name: {{ .Values.app.name }}
         # Docker image to use
@@ -151,4 +152,5 @@ spec:
           path: {{ .Values.persistence.hostPath.path }}
           type: DirectoryOrCreate
       {{- end }}
+{{- end }}
 {{- end }}

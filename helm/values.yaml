@@ -2,7 +2,7 @@
 app:
   name: sms-app
   version: v1
-  replicaCount: 2
+  replicaCount: 1
 
   # Docker image settings
   image:
@@ -64,8 +64,8 @@ modelService:
 
   service:
     type: ClusterIP
-    port: 8081
-    targetPort: 8081
+    port: 8083
+    targetPort: 8083
 
   env:
     MODEL_VERSION: "0.0.1"
@@ -84,7 +84,7 @@ modelService:
       memory: 256Mi
 
 persistence:
-  enabled: true # Enabled for assignment
+  enabled: false  # Disabled for testing - /mnt/shared doesn't exist on nodes
   storageType: hostPath
   hostPath:
     path: /mnt/shared
@@ -93,7 +93,7 @@ persistence:
   storageClass: manual
 
 monitoring:
-  enabled: false # Disabled - Prometheus Operator CRDs not installed
+  enabled: false  # Disabled - Prometheus Operator CRDs not installed
 
   prometheus:
     enabled: true

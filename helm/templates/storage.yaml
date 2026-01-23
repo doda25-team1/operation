@@ -12,7 +12,7 @@ spec:
   {{- if eq .Values.persistence.storageType "hostPath" }}
   hostPath:
     path: {{ .Values.persistence.hostPath.path }}
-    type: Directory
+    type: DirectoryOrCreate
   {{- end }}
 {{- end }}
 
