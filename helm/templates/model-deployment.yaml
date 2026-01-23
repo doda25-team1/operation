@@ -35,6 +35,8 @@ spec:
           protocol: TCP
 
         env:
+        - name: PORT
+          value: {{ $.Values.modelService.service.targetPort | quote }}
         - name: MODEL_VERSION
           value: {{ $.Values.modelService.env.MODEL_VERSION | quote }}
         - name: MODEL_BASE_URL
@@ -102,6 +104,8 @@ spec:
           protocol: TCP
 
         env:
+        - name: PORT
+          value: {{ $.Values.modelService.service.targetPort | quote }}
         - name: MODEL_VERSION
           value: {{ .Values.modelService.env.MODEL_VERSION | quote }}
         - name: MODEL_BASE_URL
