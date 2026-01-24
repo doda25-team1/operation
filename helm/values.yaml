@@ -197,7 +197,9 @@ istio:
       name: http
       protocol: HTTP
     # Host to match in VirtualService
-    host: "*" # Accept all hosts, or specify like "sms-app.example.com"
+    host: 
+      stable: "sms-app.example.com" # Accept all hosts, or specify like "sms-app.example.com"
+      experimental: "experimental.sms-app.example.com"
 
   rateLimit:
     enabled: true
