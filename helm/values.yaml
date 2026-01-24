@@ -122,7 +122,7 @@ monitoring:
       receiver: default
       webhookUrl: ""
     email:
-      enabled: false
+      enabled: true
       receiver: email
       to: you@example.com
       from: alerts@example.com
@@ -203,3 +203,23 @@ istio:
 
   rateLimit:
     enabled: true
+
+  kube-prometheus-stack:
+  prometheusOperator:
+    admissionWebhooks:
+      patch:
+        podAnnotations:
+          sidecar.istio.io/inject: "false"
+
+  crds:
+    enabled: true
+
+  alertmanager:
+    enabled: false
+  grafana:
+    enabled: false
+  prometheus:
+    enabled: false
+
+  defaultRules:
+    create: false
