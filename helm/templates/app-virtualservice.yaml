@@ -20,6 +20,24 @@ spec:
   http:
   - match:
     - headers:
+        cookie:
+          regex: ".*x-app-version=v2.*"
+    route:
+    - destination:
+        host: {{ include "doda-sms-app.fullname" . }}-app
+        subset: v2
+
+  - match:
+    - headers:
+        cookie:
+          regex: ".*x-app-version=v1.*"
+    route:
+    - destination:
+        host: {{ include "doda-sms-app.fullname" . }}-app
+        subset: v1
+
+  - match:
+    - headers:
         host:
           exact: {{ .Values.istio.gateway.host.experimental | quote }}
     route:
