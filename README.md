@@ -275,16 +275,17 @@ Istio provides advanced traffic management, security, and observability.
 | **DestinationRule** | Load balancing, circuit breaking |
 | **Traffic Splitting** | Canary releases (90/10 split) |
 | **Sticky Sessions** | Consistent hashing via `x-user-id` header |
-| **Rate Limiting** | Protect against traffic spikes |
+| **Rate Limiting** | Per-user limits via EnvoyFilter + ratelimit service |
 
 ### Traffic Flow
 
-1. Request hits **Istio Ingress Gateway** (192.168.56.95:80)
-2. **VirtualService** routes based on rules:
-   - 90% -> v1 (stable)
-   - 10% -> v2 (experiment)
-3. **DestinationRule** applies load balancing
-4. App-service calls model-service internally
+1. Request hits **Istio Ingress Gateway** (192.168.56.95:80) with `Host` header:
+   * `sms-app.example.com` -> normal split (90/10, sticky by `x-user-id`)
+   * `experimental.sms-app.example.com` -> force v2
+2. **VirtualService** routes based on weights or host match.
+3. **DestinationRule** applies consistent-hash stickiness on `x-user-id`.
+4. App-service calls model-service; model VirtualService routes by source pod label (v1 -> model-v1, v2 -> model-v2).
+5. EnvoyFilter enforces per-user rate limit (8 req/min) via ratelimit service + Redis.
 
 ### Configuration (values.yaml)
 
@@ -299,6 +300,9 @@ istio:
   gateway:
     name: "istio-ingressgateway"
     namespace: "istio-system"
+    host:
+      stable: "sms-app.example.com"
+      experimental: "experimental.sms-app.example.com"
   rateLimit:
     enabled: true
 ```
@@ -309,6 +313,17 @@ Override for different clusters:
 ```bash
 helm install sms-app ./helm --set istio.gateway.name=my-custom-gateway
 ```
+
+### Quick Canary Test (curl)
+```bash
+export INGRESS_IP=<loadbalancer-ip>
+# Stable path (mostly v1, sticky on x-user-id)
+curl -H "Host: sms-app.example.com" -H "x-user-id: demo-1" http://$INGRESS_IP/
+# Force v2
+curl -H "Host: experimental.sms-app.example.com" -H "x-user-id: demo-2" http://$INGRESS_IP/
+```
+
+If you reuse the same `x-user-id`, repeat calls stay on the same subset.
 
 ---
 
