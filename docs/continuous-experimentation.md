@@ -24,4 +24,4 @@ The experiment will run for a fixed duration (e.g., 1 hour or 1000 requests).
     -   **PASS:** If v2 shows a statistically significant increase in predictions (> 5%) AND latency is largely unchanged (within 5% margin). -> **Promote v2 to Stable**.
     -   **FAIL:** If v2 shows no improvement, fewer predictions, or higher latency. -> **Rollback to v1**.
 
-![A/B Testing Traffic Flow](./images/experiment.png)
+![A/B Testing Traffic Flow](../images/experiment.png)
