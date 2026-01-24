@@ -269,7 +269,7 @@ We implement **per-user rate limiting** using an EnvoyFilter at the Gateway plus
 
 ---
 
-## 7. External Access
+## 6. External Access
 
 The application is exposed externally as follows:
 
@@ -284,7 +284,7 @@ The application is exposed externally as follows:
 
 ---
 
-## 8. Observability
+## 7. Observability
 
 *   **Prometheus**: Scrapes metrics from `/sms/metrics` via `ServiceMonitor`.
     *   *Rules*: Includes `HighRequestRate` alerts (`PrometheusRule`).
