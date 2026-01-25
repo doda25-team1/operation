@@ -15,6 +15,13 @@ ANSIBLE_COMMON_VARS = {
 Vagrant.configure("2") do |config|
   config.vm.box = "bento/ubuntu-24.04"
 
+  # Shared VirtualBox folder mounted on all VMs at /mnt/shared
+  # This enables shared storage across all Kubernetes nodes for PersistentVolumes
+  config.vm.synced_folder "./shared", "/mnt/shared",
+    create: true,
+    type: "virtualbox",
+    mount_options: ["dmode=777", "fmode=666"]
+
   # Controller configuration
   config.vm.define "ctrl" do |ctrl|
     ctrl.vm.hostname = "ctrl"

@@ -2,3 +2,4 @@
 .vagrant
 .kube
 inventory.cfg
+shared/
