@@ -112,6 +112,6 @@ https://github.com/doda25-team1/operation/pull/34/files -> Did some modification
     - https://github.com/doda25-team1/model-service/pull/13 - [A1] Same fix for the model-service as the app workflow.
 
 - Noah: 
-    - [A2] verified all specfications from the assignment such that all points are excellent, added some extra comments to the    vagrant files. 
+    - https://github.com/doda25-team1/operation/pull/52 - [A2] verified all specfications from the assignment such that all points are excellent, added some extra comments to the vagrant files. 
 
 ### Week Q2.10 (Jan 26–27) (final submission!)
