@@ -15,7 +15,7 @@ data:
         value: "*"
         rate_limit:
           unit: minute
-          requests_per_unit: 8
+          requests_per_unit: 10
 ---
 # --- REDIS SERVICE ---
 apiVersion: v1

@@ -5,7 +5,7 @@
 # CONFIGURATION
 # ================================
 GATEWAY_HOST="localhost"
-GATEWAY_PORT=9081
+GATEWAY_PORT=8087
 APP_PATH="/sms/"
 MAX_REQUESTS=10  # Per-user limit in config
 USERS=("user1" "user2")  # List of test users

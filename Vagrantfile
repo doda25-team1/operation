@@ -65,4 +65,32 @@ Vagrant.configure("2") do |config|
     end
   end
 
+  config.trigger.after [:up, :reload, :provision, :halt, :destroy] do |t|
+    t.info = "Generating Ansible inventory: inventory.cfg (Active machines only)"
+    t.ruby do |env, machine|
+    File.open("inventory.cfg", "w") do |f|
+      f.puts "# Auto-generated Ansible inventory"
+      f.puts ""
+
+      # Controller
+      f.puts "[ctrl]"
+      if env.machine(:ctrl, :virtualbox).state.id == :running
+        f.puts "#{CTRL_IP} ansible_user=vagrant ansible_ssh_private_key_file=.vagrant/machines/ctrl/virtualbox/private_key ansible_ssh_common_args='-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'"
+      end
+
+      # Workers
+      f.puts ""
+      f.puts "[workers]"
+      (1..WORKER_COUNT).each do |i|
+        node_name = "node-#{i}".to_sym
+        if env.machine(node_name, :virtualbox).state.id == :running
+          f.puts "192.168.56.#{100+i} ansible_user=vagrant ansible_ssh_private_key_file=.vagrant/machines/node-#{i}/virtualbox/private_key ansible_ssh_common_args='-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'"
+        end
+      end
+
+    end
+    puts "Successfully created inventory.cfg"
+  end
+end
+
 end
