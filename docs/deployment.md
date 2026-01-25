@@ -264,7 +264,7 @@ We implement **per-user rate limiting** using an EnvoyFilter at the Gateway plus
 ### Implementation Details
 *   **Mechanism:** `EnvoyFilter` injects `envoy.filters.http.ratelimit` into the Gateway listener (GATEWAY context).
 *   **Backend:** `doda-sms-app-ratelimit` service with Redis backend (one replica each) deployed to `istio-system`.
-*   **Granularity:** Per **x-user-id** descriptor; current budget: **8 requests/min per user**.
+*   **Granularity:** Per **x-user-id** descriptor; current budget: **10 requests/min per user**.
 *   **Helm toggle:** Controlled by `istio.rateLimit.enabled` (defaults to true).
 
 ---
