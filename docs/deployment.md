@@ -17,7 +17,8 @@ helm install doda-sms-app . --values values.yaml
 This will provision:
 *   **App Services**: `app-service`, `model-service`.
 *   **Deployments**: `app-v1`, `app-v2`, `model-v1`, `model-v2`.
-*   **Istio Resources**: `Gateway`, `VirtualService`, `DestinationRule`, `EnvoyFilter`.
+*   **Istio Resources**: `Gateway`, `VirtualService`, `DestinationRule`, `EnvoyFilter` (rate limit).
+*   **Rate Limit Infra**: ratelimit service + Redis in `istio-system` (per-user quotas).
 *   **Observability**: `ServiceMonitor`, `PrometheusRule`, `Grafana` dashboards.
 
 ---
@@ -55,7 +56,7 @@ flowchart LR
     *   **app-deployment (canary/experiment):** Runs the `v2` version of the code. Handles ~10% of user traffic for A/B testing.
 *   **model-service (ClusterIP):** The internal machine learning service.
     *   **model-deployment (primary):** Serves predictions for the stable app (v1).
-    *   **model-deployment (shadow/secondary):** Serves predictions for the experiment app (v2), whilst also acting as a shadow target if configured.
+    *   **model-deployment (experiment):** Serves predictions for the experiment app (v2).
 
 #### Application Services and Deployments
 
@@ -73,10 +74,10 @@ flowchart LR
     subgraph Backend [Model Namespace]
         ModelSvc(model-service)
         ModelV1[Model v1<br/>Primary]
-        ModelV2[Model v2<br/>Shadow]
+        ModelV2[Model v2<br/>Experiment]
         
         ModelSvc --> ModelV1
-        ModelSvc -.-> ModelV2
+        ModelSvc --> ModelV2
     end
     
     AppV1 -->|Call| ModelSvc
@@ -90,7 +91,7 @@ flowchart LR
 
 ### Istio Data Plane
 *   **Istio IngressGateway:** An Envoy proxy load balancer that sits at the edge of the cluster, receiving all external HTTP traffic on port 80.
-*   **VirtualServices:** Define the routing rules (e.g., traffic splitting, shadow mirroring).
+*   **VirtualServices:** Define the routing rules (e.g., traffic splitting).
 *   **DestinationRules:** Define properties of the upstream clusters, such as consistent hashing for sticky sessions.
 
 #### Istio Traffic Management Layer
@@ -168,22 +169,21 @@ The life of a request flows through the system as follows:
 
 ### Typical Request Path (UI / Predict)
 
-1.  **External Entry:** A user sends an HTTP request to `http://sms-checker.local` (or configured host). The **Istio IngressGateway** intercepts this request.
+1.  **External Entry:** A user sends an HTTP request to the configured host (default `sms-app.example.com`). The **Istio IngressGateway** intercepts this request.
 2.  **Traffic Split (App Layer):** The Gateway forwards the request to the `app` VirtualService.
     *   **Decision:** The VirtualService checks the configured weights (90% vs 10%).
-    *   **Sticky Session:** It checks the `x-user-id` header. If present, it uses consistent hashing to ensure the user stays on the same version they were assigned to.
+    *   **Sticky Session:** It checks the `x-user-id` header. If present, consistent hashing ensures the user stays on the same version they were assigned to.
     *   **Result:** The request is routed to either an `app-v1` pod or an `app-v2` pod.
 3.  **Internal Service Call:** The application processes the request. When it needs a prediction, it makes an HTTP POST request to `http://model-service:8081`.
-    *   **Header Propagation:** Crucially, the application code grabs the `x-app-version` header from the incoming request (e.g., "v1") and injects it into this outgoing request.
-4.  **Route Matching (Model Layer):** The `model-service` VirtualService intercepts this internal call.
-    *   It inspects the `x-app-version` header.
-    *   **If v1:** Routes to the `model-v1` deployment.
-    *   **If v2:** Routes to the `model-v2` deployment.
-    *   **Result:** Strict isolation is maintained.
+4.  **Route Matching (Model Layer):** The `model-service` VirtualService intercepts the call.
+    *   It inspects the **source pod label** `version` (set on app deployments).
+    *   **If v1 source:** Routes to the `model-v1` subset.
+    *   **If v2 source:** Routes to the `model-v2` subset.
+    *   **Result:** Strict isolation is maintained (no old-new mixing).
 
 ### Request Data Flow
 
-The following sequence diagram illustrates the complete request flow from client to services, including routing decisions and shadow mirroring:
+The following sequence diagram illustrates the complete request flow from client to services, including routing decisions:
 
 ```mermaid
 sequenceDiagram
@@ -194,7 +194,7 @@ sequenceDiagram
     participant App as App Service
     participant ModelVS as Model Routing
     participant ModelPrimary as Model v1
-    participant ModelShadow as Model v2 (Shadow)
+    participant ModelExp as Model v2
 
     User->>IGW: HTTP GET / (x-user-id)
     IGW->>AppVS: Forward
@@ -205,16 +205,15 @@ sequenceDiagram
     
     App->>App: Process Logic
     
-    App->>ModelVS: POST /predict (x-app-version)
+    App->>ModelVS: POST /predict
     
-    Note right of ModelVS: Route based on x-app-version
+    Note right of ModelVS: Route based on source pod label (v1/v2)
     
-    par Parallel Execution
-        ModelVS->>ModelPrimary: Request (Primary)
-        ModelVS->>ModelShadow: Mirror (Shadow)
-    end
+    ModelVS->>ModelPrimary: Request (if v1)
+    ModelVS->>ModelExp: Request (if v2)
     
-    ModelPrimary-->>App: Response
+    ModelPrimary-->>App: Response (v1 path)
+    ModelExp-->>App: Response (v2 path)
     App-->>User: Final Response
 ```
 
@@ -258,55 +257,24 @@ flowchart LR
 
 ---
 
-## 5. Additional Istio Use Case: Rate Limiting
+## 5. Additional Istio Use Case (Selected): Per-User Rate Limiting
 
-For the advanced infrastructure requirement, we implemented **Global Rate Limiting** using Envoy Filters.
+We implement **per-user rate limiting** using an EnvoyFilter at the Gateway plus a dedicated ratelimit service.
 
 ### Implementation Details
-*   **Mechanism:** An `EnvoyFilter` injects the `envoy.filters.http.ratelimit` filter into the Gateway listener.
-*   **Granularity:** Rate limiting is applied per **Individual User**.
-*   **Descriptor:** The filter matches the `x-user-id` header to create a unique descriptor key (`user`).
-*   **Why Excellent:** This goes beyond simple global IP limiting by enforcing quotas at the user identity level (e.g., 10 req/min per user), preventing a single user from degrading service for others.
+*   **Mechanism:** `EnvoyFilter` injects `envoy.filters.http.ratelimit` into the Gateway listener (GATEWAY context).
+*   **Backend:** `doda-sms-app-ratelimit` service with Redis backend (one replica each) deployed to `istio-system`.
+*   **Granularity:** Per **x-user-id** descriptor; current budget: **8 requests/min per user**.
+*   **Helm toggle:** Controlled by `istio.rateLimit.enabled` (defaults to true).
 
 ---
 
-## 6. Additional Istio Use Case: Shadow Launch (Model)
-
-The deployment implements a **shadow launch** pattern for the `model-service`.
-
-### Shadow Launch Architecture
-*   **User-Visible Traffic**: All model responses for v1 users are served by **subset `primary`** (`model-v1`).
-*   **Mirrored Traffic**: Istio's `mirror` feature copies 100% of these requests to **subset `shadow`** (`model-v2` or a dedicated shadow deployment).
-*   **Outcome**:
-    *   The `shadow` version processes the request asynchronously.
-    *   Its response is **discarded** by the proxy and never returned to the user.
-    *   This allows us to evaluate the performance and correctness of a new model version under real production traffic load without risking any negative impact on the user.
-
-#### Shadow Launch Diagram
-
-```mermaid
-flowchart TB
-    Source[App Service] --> TrafficSplit{VirtualService}
-    
-    TrafficSplit -->|100%| Primary[Model v1]
-    TrafficSplit -.->|Mirror 100%| Shadow[Model v2]
-    
-    Primary -->|Response| User([Return to User])
-    Shadow -->|Response| Void([Discard])
-    
-    style Source fill:#e1bee7
-    style Primary fill:#c8e6c9
-    style Shadow fill:#cfd8dc
-    style Void fill:#ffcdd2
-```
-
----
-
-## 7. External Access
+## 6. External Access
 
 The application is exposed externally as follows:
 
-*   **Hostname:** `sms-checker.local` (or `*`).
+*   **Hostname (stable):** `sms-app.example.com` (configurable via `istio.gateway.host.stable`).
+*   **Hostname (experimental):** `experimental.sms-app.example.com` (configurable via `istio.gateway.host.experimental`).
 *   **Ports:** HTTP **80** (exposed via Istio IngressGateway).
 *   **Paths:**
     *   `/`: Frontend web application.
@@ -316,11 +284,11 @@ The application is exposed externally as follows:
 
 ---
 
-## 8. Observability
+## 7. Observability
 
-*   **Prometheus**: Scrapes metrics from `/metrics`. Discovered via `ServiceMonitor`.
-    *   *Rules*: Includes `HighRequestRate` alerts.
-*   **Grafana**: Pre-configured dashboards (loaded via ConfigMap) visualize:
+*   **Prometheus**: Scrapes metrics from `/sms/metrics` via `ServiceMonitor`.
+    *   *Rules*: Includes `HighRequestRate` alerts (`PrometheusRule`).
+*   **Grafana**: Pre-configured dashboards (ConfigMap) visualize:
     *   Request Rates (Golden Signals).
     *   v1 vs v2 Business Metrics (Conversion Rate).
 *   **Alertmanager**: configured to route alerts (e.g., to email or webhook).

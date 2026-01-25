@@ -24,4 +24,48 @@ The experiment will run for a fixed duration (e.g., 1 hour or 1000 requests).
     -   **PASS:** If v2 shows a statistically significant increase in predictions (> 5%) AND latency is largely unchanged (within 5% margin). -> **Promote v2 to Stable**.
     -   **FAIL:** If v2 shows no improvement, fewer predictions, or higher latency. -> **Rollback to v1**.
 
+## Access & Traffic Split
+* **Stable host (v1 default):** `sms-app.example.com`
+* **Experimental host (v2 only):** `experimental.sms-app.example.com`
+* **Split:** 90% v1 / 10% v2 in `app-virtualservice` (configurable via `istio.trafficSplit.*`).
+* **Sticky sessions:** `DestinationRule` hashes on `x-user-id`. Keep the same header value to stay on the assigned version.
+
+## How to Test (curl / Postman)
+1) **Hit stable host (mostly v1, sticky by user id)**
+```bash
+curl -H "Host: sms-app.example.com" \
+     -H "x-user-id: demo-123" \
+     http://<INGRESS_IP>/
+```
+Repeated calls with the same `x-user-id` should stay on one version (v1 most likely).
+
+2) **Force v2 via experimental host**
+```bash
+curl -H "Host: experimental.sms-app.example.com" \
+     -H "x-user-id: demo-999" \
+     http://<INGRESS_IP>/
+```
+All requests should hit app-v2; sticky hashing ensures reloads stay on v2.
+
+3) **Check metrics scraping**
+```bash
+curl -H "Host: sms-app.example.com" http://<INGRESS_IP>/sms/metrics
+```
+Verify `variant="v1"` and `variant="v2"` counters grow as expected.
+
+## Observing Results in Grafana
+* Port-forward Grafana (replace namespace/release if needed):
+```bash
+kubectl port-forward svc/doda-sms-app-grafana 3000:3000
+```
+* Open `http://localhost:3000`, load dashboard **“SMS App – Experiment Decision”**.
+  * Panels to watch: request rate v1 vs v2 (`sms_app_requests_total`), p95 latency (`app_http_request_duration_seconds`), error rate.
+* Screenshot reference: `images/experiment.png`.
+
+## Prometheus Integration
+* Metrics exposed at `/sms/metrics`; discovered via `ServiceMonitor` (see Helm chart).
+* Grafana dashboard JSON: `helm/dashboards/dashboard-experiment.json`.
+
+---
+
 ![A/B Testing Traffic Flow](../images/experiment.png)
