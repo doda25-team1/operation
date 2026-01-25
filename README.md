@@ -201,6 +201,8 @@ This runs the Ansible playbooks to:
 - Join worker nodes to the cluster
 - Install Flannel CNI for pod networking
 
+**Shared Storage:** All VMs automatically mount the host's `./shared` folder at `/mnt/shared`. This enables shared storage across all Kubernetes nodes via hostPath volumes, allowing pods on different nodes to access the same data (e.g., model files).
+
 ### Step 2: Verify Cluster
 
 SSH into the controller:
