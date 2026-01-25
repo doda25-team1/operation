@@ -66,8 +66,8 @@ Vagrant.configure("2") do |config|
   end
 
   config.trigger.after [:up, :reload, :provision, :halt, :destroy] do |t|
-  t.info = "Generating Ansible inventory: inventory.cfg (Active machines only)"
-  t.ruby do |env, machine|
+    t.info = "Generating Ansible inventory: inventory.cfg (Active machines only)"
+    t.ruby do |env, machine|
     File.open("inventory.cfg", "w") do |f|
       f.puts "# Auto-generated Ansible inventory"
       f.puts ""
