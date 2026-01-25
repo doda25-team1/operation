@@ -175,8 +175,8 @@ istio:
 
   # Traffic split configuration for canary releases
   trafficSplit:
-    stable: 50 # Percentage of traffic to v1 (stable version)
-    experiment: 50 # Percentage of traffic to v2 (experiment version)
+    stable: 90 # Percentage of traffic to v1 (stable version)
+    experiment: 10 # Percentage of traffic to v2 (experiment version)
 
   # Sticky session configuration using consistent hashing
   stickySession:
