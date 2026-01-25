@@ -110,4 +110,8 @@ https://github.com/doda25-team1/operation/pull/34/files -> Did some modification
     - https://github.com/doda25-team1/model-service/pull/13 - [A1] Same fix for the model-service as the app workflow.
     - https://github.com/doda25-team1/operation/pull/48 - [A4] I made final adjustments to the documentation, where I removed the shadow release, which was not implemented. Additionally, I made other small changes to ensure alignment between Helm values and the documentation.
 
+- Deon:
+    - https://github.com/doda25-team1/operation/pull/49 -> Automate inventory.cfg creation
+    - https://github.com/doda25-team1/operation/pull/46 Fixes for canary release, and consistent app-v1 to model-v1 connection.
+
 ### Week Q2.10 (Jan 26–27) (final submission!)
