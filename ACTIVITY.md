@@ -114,4 +114,7 @@ https://github.com/doda25-team1/operation/pull/34/files -> Did some modification
     - https://github.com/doda25-team1/operation/pull/49 -> Automate inventory.cfg creation
     - https://github.com/doda25-team1/operation/pull/46 Fixes for canary release, and consistent app-v1 to model-v1 connection.
 
+- Ion:
+    - https://github.com/doda25-team1/operation/pull/51 - Added a shared mounted directory for all VMs.
+
 ### Week Q2.10 (Jan 26–27) (final submission!)
