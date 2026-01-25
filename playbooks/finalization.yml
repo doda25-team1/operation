@@ -5,6 +5,8 @@
     KUBECONFIG: /etc/kubernetes/admin.conf
 
   tasks:
+
+    # Step 20: Install MetalLB
     - name: Install MetalLB Manifest
       ansible.builtin.shell: kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.14.9/config/manifests/metallb-native.yaml
 
@@ -41,6 +43,7 @@
     - name: Apply MetalLB Configuration
       ansible.builtin.shell: kubectl apply -f /root/metallb-config.yaml
 
+    # Step 21: Install the Nginx Ingress Controller
     - name: Add Ingress-NGINX Helm repository
       kubernetes.core.helm_repository:
         name: ingress-nginx
@@ -80,7 +83,7 @@
         --timeout=120s
 
 
-    # ============ Istio Installation ============
+    # Step 23: Install Istio
     - name: Check if Istio is already installed
       ansible.builtin.shell: kubectl get namespace istio-system
       register: istio_namespace
@@ -162,6 +165,7 @@
         msg: "Istio has been successfully installed and configured"
 
 
+    # Step 22: Install Kubernetes Dashboard
     - name: Add Kubernetes Dashboard Helm repo
       kubernetes.core.helm_repository:
         name: kubernetes-dashboard
