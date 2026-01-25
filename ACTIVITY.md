@@ -108,5 +108,6 @@ https://github.com/doda25-team1/operation/pull/34/files -> Did some modification
 - Daniel:
     - https://github.com/doda25-team1/app/pull/15 - [A1] I made the final adjustment to the app workflow, which required a step to sync with the default branch after the previous release, since the automated commit commit was missing and it prevented a fast-forward. 
     - https://github.com/doda25-team1/model-service/pull/13 - [A1] Same fix for the model-service as the app workflow.
+    - https://github.com/doda25-team1/operation/pull/48 - [A4] I made final adjustments to the documentation, where I removed the shadow release, which was not implemented. Additionally, I made other small changes to ensure alignment between Helm values and the documentation.
 
 ### Week Q2.10 (Jan 26–27) (final submission!)
