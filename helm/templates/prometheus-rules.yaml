@@ -1,4 +1,4 @@
-{{- if and .Values.monitoring.enabled .Values.monitoring.rules.requestRate.enabled }}
+{{- if .Values.monitoring.enabled }}
 apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
 metadata:
@@ -10,6 +10,7 @@ spec:
   groups:
   - name: sms-app.rules
     rules:
+    {{- if .Values.monitoring.rules.requestRate.enabled }}
     - alert: HighRequestRate
       expr: sum(rate(app_http_requests_total[1m])) * 60 > {{ .Values.monitoring.rules.requestRate.thresholdPerMinute }}
       for: {{ .Values.monitoring.rules.requestRate.for }}
@@ -18,4 +19,25 @@ spec:
       annotations:
         summary: "SMS app receiving high traffic"
         description: "The SMS app is serving over {{ .Values.monitoring.rules.requestRate.thresholdPerMinute }} requests per minute for more than {{ .Values.monitoring.rules.requestRate.for }}."
+    {{- end }}
+    {{- if .Values.monitoring.rules.highErrorRate.enabled }}
+    - alert: HighErrorRate
+      expr: (sum(rate(app_http_requests_total{status="500"}[5m])) / sum(rate(app_http_requests_total[5m]))) * 100 > {{ .Values.monitoring.rules.highErrorRate.thresholdPercent }}
+      for: {{ .Values.monitoring.rules.highErrorRate.for }}
+      labels:
+        severity: {{ .Values.monitoring.rules.highErrorRate.severity }}
+      annotations:
+        summary: "High error rate detected in SMS app"
+        description: "The SMS app is returning {{ printf "%.2f" (query \"(sum(rate(app_http_requests_total{status=\\\"500\\\"}[5m])) / sum(rate(app_http_requests_total[5m]))) * 100\" | first | value) }}% errors (5xx), exceeding the {{ .Values.monitoring.rules.highErrorRate.thresholdPercent }}% threshold."
+    {{- end }}
+    {{- if .Values.monitoring.rules.modelServiceDown.enabled }}
+    - alert: ModelServiceDown
+      expr: up{job="{{ include "doda-sms-app.fullname" . }}-model"} == 0
+      for: {{ .Values.monitoring.rules.modelServiceDown.for }}
+      labels:
+        severity: {{ .Values.monitoring.rules.modelServiceDown.severity }}
+      annotations:
+        summary: "Model service is down"
+        description: "The ML model service has been unavailable for more than {{ .Values.monitoring.rules.modelServiceDown.for }}. Predictions will fail."
+    {{- end }}
 {{- end }}
