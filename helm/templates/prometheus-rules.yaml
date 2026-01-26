@@ -22,17 +22,17 @@ spec:
     {{- end }}
     {{- if .Values.monitoring.rules.highErrorRate.enabled }}
     - alert: HighErrorRate
-      expr: (sum(rate(app_http_requests_total{status="500"}[5m])) / sum(rate(app_http_requests_total[5m]))) * 100 > {{ .Values.monitoring.rules.highErrorRate.thresholdPercent }}
+      expr: (sum(rate(app_http_requests_total{status=~"5.."}[5m])) / sum(rate(app_http_requests_total[5m]))) * 100 > {{ .Values.monitoring.rules.highErrorRate.thresholdPercent }}
       for: {{ .Values.monitoring.rules.highErrorRate.for }}
       labels:
         severity: {{ .Values.monitoring.rules.highErrorRate.severity }}
       annotations:
         summary: "High error rate detected in SMS app"
-        description: "The SMS app is returning {{ printf "%.2f" (query \"(sum(rate(app_http_requests_total{status=\\\"500\\\"}[5m])) / sum(rate(app_http_requests_total[5m]))) * 100\" | first | value) }}% errors (5xx), exceeding the {{ .Values.monitoring.rules.highErrorRate.thresholdPercent }}% threshold."
+        description: "The SMS app is returning {{`{{`}} printf \"%.2f\" $value {{`}}`}}% errors (5xx), exceeding the {{ .Values.monitoring.rules.highErrorRate.thresholdPercent }}% threshold."
     {{- end }}
     {{- if .Values.monitoring.rules.modelServiceDown.enabled }}
     - alert: ModelServiceDown
-      expr: up{job="{{ include "doda-sms-app.fullname" . }}-model"} == 0
+      expr: up{job="{{ .Values.monitoring.rules.modelServiceDown.jobLabel }}"} == 0
       for: {{ .Values.monitoring.rules.modelServiceDown.for }}
       labels:
         severity: {{ .Values.monitoring.rules.modelServiceDown.severity }}

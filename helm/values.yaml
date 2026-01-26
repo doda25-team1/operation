@@ -149,6 +149,7 @@ monitoring:
       enabled: true
       for: 1m
       severity: critical
+      jobLabel: "sms-model-service"
 
   grafana:
     enabled: true
