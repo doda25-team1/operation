@@ -2,11 +2,14 @@
 - hosts: node-*
   become: true
   tasks:
+
+    # Step 18: Generate Join Command
     - name: Generate join command from controller
       ansible.builtin.shell: kubeadm token create --print-join-command
       register: join_command
       delegate_to: ctrl
 
+    # Step 19: Run Join Command
     - name: Join the node to the cluster
       ansible.builtin.shell: "{{ join_command.stdout }}"
       args:

@@ -69,6 +69,8 @@ Additionally, tested end to end till prometheus montoring on minikube cluster
 
 - Nicolas: https://github.com/doda25-team1/operation/pull/22 - Added the basic graphana setup. Waiting for further work from rest of the group in order to finalyze.
 
+- Noah: make a start with grafana dashboards for A3-4 but was not able to finish them due to personal circumstances.
+
 ### Week Q2.6 (Dec 15–21)
 - Deon:https://github.com/doda25-team1/operation/pull/27 -> Added rate limit use case to handle cses for more than 10 requests per minute.
 
@@ -123,6 +125,9 @@ https://github.com/doda25-team1/operation/pull/34/files -> Did some modification
 -Nicolas:
     -https://github.com/doda25-team1/operation/pull/45- Added changes and fixes to the shared volume + the start of documentation by deployment.md, re-added the continious-experimentation which was removed by mistake. Changes 
 
+
+- Noah: 
+    - https://github.com/doda25-team1/operation/pull/52 - [A2] verified all specifications from the assignment such that all points are excellent, added some extra comments to the vagrant files. 
 
 ### Week Q2.10 (Jan 26–27) (final submission!)
 

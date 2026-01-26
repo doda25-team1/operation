@@ -33,7 +33,7 @@
         state: stopped
         enabled: false
 
-    #step4
+    # Step 4: Register SSH Keys
     - name: Ensure .ssh directory exists
       ansible.builtin.file:
         path: "/home/{{ ssh_user }}/.ssh"
@@ -62,7 +62,7 @@
         msg: "{{ lookup('fileglob', ssh_keys_dir + '/*.pub', wantlist=True) }}"
 
 
-    # step5
+    # Step 5: Disable SWAP
     - name: Disable swap immediately
       ansible.builtin.shell: swapoff -a
 
@@ -72,7 +72,7 @@
         regexp: '\bswap\b'
         state: absent
 
-    #step6
+    # Step 6: br_netfilter
     - name: Enable kernel modules for Kubernetes networking
       ansible.builtin.copy:
         dest: /etc/modules-load.d/k8s.conf
@@ -93,7 +93,7 @@
         name: br_netfilter
         state: present
 
-    #step7
+    # Step 7: Enable IPv4 forwarding
     - name: Enable IPv4 forwarding and bridge networking
       ansible.posix.sysctl:
         name: "{{ item.name }}"
@@ -106,7 +106,7 @@
         - { name: net.bridge.bridge-nf-call-iptables, value: 1 }
         - { name: net.bridge.bridge-nf-call-ip6tables, value: 1 }
 
-    # use jinja to generate /etc/hosts
+    # Step 8: Use jinja to generate /etc/hosts
     - name: Set up /etc/hosts file dynamically
       template:
         src: "../templates/hosts.j2"
@@ -115,7 +115,7 @@
         group: root
         mode: '0644'
 
-    #task8
+    # Step 9: Add kubernetes repository
     - name: Create directory for apt keyrings
       ansible.builtin.file:
         path: /etc/apt/keyrings
@@ -138,7 +138,7 @@
       ansible.builtin.apt:
         update_cache: yes
 
-    #step 9
+    # Step 10: Install K8s tools
     - name: Install container runtime and Kubernetes tools
       ansible.builtin.apt:
         name:
@@ -161,7 +161,7 @@
         - containerd
         - runc
 
-    #step 11
+    # Step 11: Configure containerd
     - name: Ensure containerd config directory exists
       ansible.builtin.file:
         path: /etc/containerd
@@ -201,7 +201,7 @@
         state: restarted
         enabled: yes
 
-    #step 12
+    # Step 12: Configure Kubelet
     - name: Configure Kubelet Node IP
       ansible.builtin.lineinfile:
         path: /etc/default/kubelet
