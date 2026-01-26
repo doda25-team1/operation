@@ -127,3 +127,5 @@ https://github.com/doda25-team1/operation/pull/34/files -> Did some modification
 ### Week Q2.10 (Jan 26–27) (final submission!)
 
 - Alex: https://github.com/doda25-team1/operation/pull/53 - Adds new type of alerts in prometheus alert manager, specifically the one that checks the downtime of model service and the one that checks if there are not too many 5xx errors outgoing.
+
+- Ion: https://github.com/doda25-team1/operation/pull/54 - Add a startup probe for the model-service to give it up to 5 minutes to download and load the ML model (on startup), before running other probes.
