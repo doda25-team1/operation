@@ -112,10 +112,28 @@
         remote_src: yes
       when: istio_namespace.rc != 0
 
-    - name: Install Istio with demo profile
+    - name: Custom IstioOperator for fixed Istio Gateway IP
+      ansible.builtin.copy:
+        dest: /root/istio-operator.yaml
+        content: |
+          apiVersion: install.istio.io/v1alpha1
+          kind: IstioOperator
+          spec:
+            profile: demo
+            components:
+              ingressGateways:
+              - name: istio-ingressgateway
+                enabled: true
+                k8s:
+                  service:
+                    type: LoadBalancer
+                    loadBalancerIP: "192.168.56.96"
+      when: istio_namespace.rc != 0
+    
+    - name: Install Istio using custom IstioOperator
       ansible.builtin.shell: |
         export PATH=/usr/local/bin:$PATH
-        istioctl install --set profile=demo -y
+        istioctl install -y -f /root/istio-operator.yaml
       environment:
         KUBECONFIG: /etc/kubernetes/admin.conf
       when: istio_namespace.rc != 0
@@ -171,6 +189,46 @@
             annotations:
               nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
 
+    - name: Ensure /root/certs exists for dashboard TLS
+      ansible.builtin.file:
+        path: /root/certs
+        state: directory
+        mode: '0755'
+
+    - name: Generate self-signed certificate for dashboard.local
+      ansible.builtin.shell: |
+        openssl req -x509 -nodes -days 365 \
+          -newkey rsa:2048 \
+          -keyout /root/certs/dashboard.key \
+          -out /root/certs/dashboard.crt \
+          -subj "/CN=dashboard.local/O=dashboard.local"
+      args:
+        creates: /root/certs/dashboard.crt
+
+    - name: Read generated certificate
+      ansible.builtin.slurp:
+        src: /root/certs/dashboard.crt
+      register: dashboard_crt
+
+    - name: Read generated key
+      ansible.builtin.slurp:
+        src: /root/certs/dashboard.key
+      register: dashboard_key
+
+    - name: Create TLS secret for dashboard (kubernetes-dashboard namespace)
+      kubernetes.core.k8s:
+        state: present
+        definition:
+          apiVersion: v1
+          kind: Secret
+          metadata:
+            name: dashboard-tls
+            namespace: kubernetes-dashboard
+          type: kubernetes.io/tls
+          data:
+            tls.crt: "{{ dashboard_crt.content }}"
+            tls.key: "{{ dashboard_key.content }}"
+
 
     - name: Create admin-user ServiceAccount
       kubernetes.core.k8s:
@@ -214,6 +272,10 @@
               nginx.ingress.kubernetes.io/ssl-redirect: "true"
           spec:
             ingressClassName: nginx
+            tls:
+              - hosts:
+                - dashboard.local
+                secretName: dashboard-tls
             rules:
             - host: dashboard.local
               http:

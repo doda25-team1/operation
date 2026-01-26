@@ -9,7 +9,7 @@ metadata:
 spec:
   hosts:
   {{- if .Values.istio.gateway.enabled }}
-  - "{{ .Values.istio.gateway.host | default "*" }}"
+  - "*"
   {{- else }}
   - {{ include "doda-sms-app.fullname" . }}-app
   {{- end }}
@@ -18,21 +18,48 @@ spec:
   - {{ include "doda-sms-app.fullname" . }}-gateway
   {{- end }}
   http:
+  - match:
+    - headers:
+        host:
+          exact: {{ .Values.istio.gateway.host.experimental | quote }}
+    route:
+    - destination:
+        host: {{ include "doda-sms-app.fullname" . }}-app
+        subset: v2
+
+  - match:
+    - headers:
+        cookie:
+          regex: ".*x-app-version=v2.*"
+    route:
+    - destination:
+        host: {{ include "doda-sms-app.fullname" . }}-app
+        subset: v2
+
+  - match:
+    - headers:
+        cookie:
+          regex: ".*x-app-version=v1.*"
+    route:
+    - destination:
+        host: {{ include "doda-sms-app.fullname" . }}-app
+        subset: v1
+
   - route:
     - destination:
         host: {{ include "doda-sms-app.fullname" . }}-app
         subset: v1
       weight: {{ .Values.istio.trafficSplit.stable | default 90 }}
       headers:
-        request:
+        response:
           set:
-            x-app-version: "v1"
+            Set-Cookie: "x-app-version=v1; Path=/; Max-Age=3600"
     - destination:
         host: {{ include "doda-sms-app.fullname" . }}-app
         subset: v2
       weight: {{ .Values.istio.trafficSplit.experiment | default 10 }}
       headers:
-        request:
+        response:
           set:
-            x-app-version: "v2"
+            Set-Cookie: "x-app-version=v2; Path=/; Max-Age=3600"
 {{- end }}

@@ -2,21 +2,21 @@
 app:
   name: sms-app
   version: v1
-  replicaCount: 2
-  
+  replicaCount: 1
+
   # Docker image settings
   image:
     repository: ghcr.io/doda25-team1/app
     tag: latest # version to be used
     pullPolicy: IfNotPresent # only if not already downloaded
-  
+
   # Network settings for the app
   service:
     type: ClusterIP # only accessible within the cluster
     port: 8080 # port other services talk to
     targetPort: 8080 # port app listens to
     portName: http # port name for istio
-  
+
   # Resource limitations
   resources:
     limits:
@@ -26,7 +26,7 @@ app:
     requests:
       cpu: 250m # 0.25 CPU cores
       memory: 256Mi # 256 megabytes of RAM
-  
+
   # Access the app from outside the cluster
   ingress:
     enabled: true
@@ -52,7 +52,7 @@ app:
       enabled: true
       interval: 30s
     releaseLabel: sms-app-prom
-    
+
 modelService:
   name: sms-model-service
   replicaCount: 1
@@ -64,9 +64,9 @@ modelService:
 
   service:
     type: ClusterIP
-    port: 8081
-    targetPort: 8081
-  
+    port: 8083
+    targetPort: 8083
+
   env:
     MODEL_VERSION: "0.0.1"
     MODEL_BASE_URL: "https://github.com/doda25-team1/model-service/releases/download"
@@ -84,7 +84,7 @@ modelService:
       memory: 256Mi
 
 persistence:
-  enabled: false  # Disabled for testing - /mnt/shared doesn't exist on nodes
+  enabled: true  # Disabled for testing - /mnt/shared doesn't exist on nodes
   storageType: hostPath
   hostPath:
     path: /mnt/shared
@@ -93,7 +93,7 @@ persistence:
   storageClass: manual
 
 monitoring:
-  enabled: false  # Disabled - Prometheus Operator CRDs not installed
+  enabled: true  # Disabled - Prometheus Operator CRDs not installed
 
   prometheus:
     enabled: true
@@ -119,16 +119,16 @@ monitoring:
       type: ClusterIP
       port: 9093
     config:
-      receiver: default
+      receiver: email
       webhookUrl: ""
     email:
-      enabled: false
+      enabled: true
       receiver: email
-      to: you@example.com
-      from: alerts@example.com
-      smarthost: smtp.example.com:587
+      to: deonsaji10@gmail.com
+      from: deonsaji10@gmail.com
+      smarthost: smtp.gmail.com:587
       requireTls: true
-      username: alerts@example.com
+      username: deonsaji10@gmail.com
       password: "" # set via Helm value; stored in a Secret and mounted into Alertmanager
     resources: {}
 
@@ -197,7 +197,29 @@ istio:
       name: http
       protocol: HTTP
     # Host to match in VirtualService
-    host: "*" # Accept all hosts, or specify like "sms-app.example.com"
+    host: 
+      stable: "sms-app.example.com" # Accept all hosts, or specify like "sms-app.example.com"
+      experimental: "experimental.sms-app.example.com"
 
   rateLimit:
     enabled: true
+
+kube-prometheus-stack:
+  prometheusOperator:
+    admissionWebhooks:
+      patch:
+        podAnnotations:
+          sidecar.istio.io/inject: "false"
+
+  crds:
+    enabled: true
+
+  alertmanager:
+    enabled: false
+  grafana:
+    enabled: false
+  prometheus:
+    enabled: false
+  
+  defaultRules:
+    create: false

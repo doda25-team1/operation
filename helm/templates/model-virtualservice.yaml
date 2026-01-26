@@ -12,17 +12,16 @@ spec:
   http:
   # ensure app-v1 talks to model-v1 and app-v2 talks to model-v2
   - match:
-    - headers:
-        x-app-version:
-          exact: "v2"
+    - sourceLabels:
+        version: v2
     route:
     - destination:
         host: {{ include "doda-sms-app.fullname" . }}-model
         subset: v2
+
   - match:
-    - headers:
-        x-app-version:
-          exact: "v1"
+    - sourceLabels:
+        version: v1
     route:
     - destination:
         host: {{ include "doda-sms-app.fullname" . }}-model
