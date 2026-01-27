@@ -224,6 +224,8 @@ Run the finalization playbook from your host machine (after `vagrant up`, using 
 ```bash
 cd operation
 ansible-playbook -i inventory_portforward.ini playbooks/finalization.yml
+# if by some chance the previous command failed, try:
+# ansible-playbook -i .vagrant/provisioners/ansible/inventory/vagrant_ansible_inventory playbooks/finalization.yml
 ```
 
 This installs:
