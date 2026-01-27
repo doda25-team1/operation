@@ -138,6 +138,18 @@ monitoring:
       thresholdPerMinute: 15
       for: 2m
       severity: warning
+    
+    highErrorRate:
+      enabled: true
+      thresholdPercent: 5  # Alert if more than 5% of requests return 500 errors
+      for: 3m
+      severity: critical
+    
+    modelServiceDown:
+      enabled: true
+      for: 1m
+      severity: critical
+      jobLabel: "sms-model-service"
 
   grafana:
     enabled: true
