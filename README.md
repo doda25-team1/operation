@@ -237,8 +237,16 @@ This installs:
 ### Step 4: Deploy Application with Helm
 
 ```bash
-vagrant ssh ctrl
-helm install sms-app /vagrant/helm
+cd operation
+export KUBECONFIG="$(pwd)/.kube/config"
+helm install sms-app ./helm
+```
+
+### Customizing Gateway Name
+
+Override for different clusters:
+```bash
+helm install sms-app ./helm --set istio.gateway.name=my-custom-gateway
 ```
 
 ### Step 5: Verify Deployment
@@ -255,14 +263,38 @@ Expected:
 - ClusterIP services for both
 - Ingress configured
 
-### Using kubectl from Host Machine
+---
 
-The kubeconfig is copied to `operation/.kube/config`:
+### Kubernetes Dashboard
 
+Web UI for cluster management.
+
+**Access Dashboard:**
+
+1. Add to hosts file (`/etc/hosts` or `C:\Windows\System32\drivers\etc\hosts`):
+   ```
+   192.168.56.95  dashboard.local sms-app.example.com
+   192.168.56.96  experimental.sms-app.example.com
+   ```
+
+2. Get admin token:
+   ```bash
+   vagrant ssh ctrl -c "kubectl -n kubernetes-dashboard create token admin-user"
+   ```
+
+3. Open https://dashboard.local and login with token
+
+---
+
+### Quick Canary Test (curl)
 ```bash
-export KUBECONFIG="$(pwd)/.kube/config"
-kubectl get nodes
+# Stable path (mostly v1, sticky on x-user-id)
+curl -H "Host: sms-app.example.com" -H "x-user-id: demo-1" http://192.168.56.95/ # Ingress Controller IP
+# Force v2
+curl -H "Host: experimental.sms-app.example.com" -H "x-user-id: demo-2" http://192.168.56.96/ # Istio Gateway IP
 ```
+
+If you reuse the same `x-user-id`, repeat calls stay on the same subset.
 
 ---
 
@@ -283,53 +315,17 @@ Istio provides advanced traffic management, security, and observability.
 
 ### Traffic Flow
 
-1. Request hits **Istio Ingress Gateway** (192.168.56.95:80) with `Host` header:
-   * `sms-app.example.com` -> normal split (90/10, sticky by `x-user-id`)
-   * `experimental.sms-app.example.com` -> force v2
+Enable the 90/10 split on `http://localhost:8088`:
+```
+cd operation
+kubectl port-forward svc/istio-ingressgateway -n istio-system 8088:80
+```
+
+1. Request hits **Istio Ingress Gateway** after opening `http://localhost:8088`:
 2. **VirtualService** routes based on weights or host match.
 3. **DestinationRule** applies consistent-hash stickiness on `x-user-id`.
 4. App-service calls model-service; model VirtualService routes by source pod label (v1 -> model-v1, v2 -> model-v2).
 5. EnvoyFilter enforces per-user rate limit (8 req/min) via ratelimit service + Redis.
-
-### Configuration (values.yaml)
-
-```yaml
-istio:
-  enabled: true
-  trafficSplit:
-    stable: 90      # % to v1
-    experiment: 10  # % to v2
-  stickySession:
-    headerName: "x-user-id"
-  gateway:
-    name: "istio-ingressgateway"
-    namespace: "istio-system"
-    host:
-      stable: "sms-app.example.com"
-      experimental: "experimental.sms-app.example.com"
-  rateLimit:
-    enabled: true
-```
-
-### Customizing Gateway Name
-
-Override for different clusters:
-```bash
-helm install sms-app ./helm --set istio.gateway.name=my-custom-gateway
-```
-
-### Quick Canary Test (curl)
-```bash
-export INGRESS_IP=<loadbalancer-ip>
-# Stable path (mostly v1, sticky on x-user-id)
-curl -H "Host: sms-app.example.com" -H "x-user-id: demo-1" http://$INGRESS_IP/
-# Force v2
-curl -H "Host: experimental.sms-app.example.com" -H "x-user-id: demo-2" http://$INGRESS_IP/
-```
-
-If you reuse the same `x-user-id`, repeat calls stay on the same subset.
-
----
 
 ## Monitoring & Observability
 
@@ -353,26 +349,6 @@ kubectl port-forward svc/grafana 3000:3000
 # Open http://localhost:3000
 # Default: admin / adminPassword
 ```
-
-### Kubernetes Dashboard
-
-Web UI for cluster management.
-
-**Access Dashboard:**
-
-1. Add to hosts file (`/etc/hosts` or `C:\Windows\System32\drivers\etc\hosts`):
-   ```
-   192.168.56.95  dashboard.local
-   ```
-
-2. Get admin token:
-   ```bash
-   vagrant ssh ctrl -c "kubectl -n kubernetes-dashboard create token admin-user"
-   ```
-
-3. Open https://dashboard.local and login with token
-
----
 
 ## Configuration Reference
 
