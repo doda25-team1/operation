@@ -131,7 +131,7 @@ The model-service is a **Python Flask** application that:
 **Environment Variables:**
 | Variable | Example | Description |
 |----------|---------|-------------|
-| `MODEL_VERSION` | `0.0.1` | Model version to download from releases |
+| `MODEL_VERSION` | `2.0.1` | Model version to download from releases |
 | `MODEL_BASE_URL` | `https://github.com/doda25-team1/model-service/releases/download` | Base URL for model downloads |
 
 
@@ -383,7 +383,7 @@ Web UI for cluster management.
 | `app.service.port` | 8080 | Service port |
 | `app.ingress.hostname` | sms-app.example.com | Ingress hostname |
 | `modelService.replicaCount` | 1 | Model service replicas |
-| `modelService.env.MODEL_VERSION` | 0.0.1 | ML model version |
+| `modelService.env.MODEL_VERSION` | 2.0.1 | ML model version |
 | `istio.enabled` | true | Enable Istio resources |
 | `istio.trafficSplit.stable` | 90 | % traffic to v1 |
 | `istio.gateway.name` | istio-ingressgateway | Gateway name |

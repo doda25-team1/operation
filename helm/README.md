@@ -165,7 +165,7 @@ pkill -f "port-forward"
 ### Model Service Settings
 - `modelService.image.repository`: Model service image (default: `ghcr.io/doda25-team1/model-service`)
 - `modelService.image.tag`: Model service version (default: `latest`)
-- `modelService.env.MODEL_VERSION`: Model version to download (default: `0.0.1`)
+- `modelService.env.MODEL_VERSION`: Model version to download (default: `2.0.1`)
 - `modelService.env.MODEL_BASE_URL`: Base URL for model downloads (default: GitHub releases URL)
 
 ### ConfigMap and Secret (Optional)

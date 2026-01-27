@@ -68,7 +68,7 @@ modelService:
     targetPort: 8083
 
   env:
-    MODEL_VERSION: "0.0.1"
+    MODEL_VERSION: "2.0.1"
     MODEL_BASE_URL: "https://github.com/doda25-team1/model-service/releases/download"
 
   volume:
