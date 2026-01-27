@@ -335,7 +335,7 @@ Scrapes metrics from app-service at `/sms/metrics`.
 
 **Access Prometheus:**
 ```bash
-kubectl port-forward svc/prometheus 9090:9090
+kubectl port-forward svc/sms-app-doda-sms-app-prometheus 9090:9090
 # Open http://localhost:9090
 ```
 
@@ -345,7 +345,7 @@ Visualizes metrics with pre-configured dashboards.
 
 **Access Grafana:**
 ```bash
-kubectl port-forward svc/grafana 3000:3000
+kubectl port-forward svc/sms-app-doda-sms-app-grafana 3000:3000
 # Open http://localhost:3000
 # Default: admin / adminPassword
 ```
